@@ -1,0 +1,172 @@
+session_id: 2026-06-02_paso-5-tests-de-regresion-semantica-afinado-del-catalogo
+spec_path: C:\Parcial2Calidad-CICD\.cortex\vault\specs\2026-06-02_paso-5-tests-de-regresion-semantica-afinado-del-catalogo.md
+spec_summary: 'Cerrar el loop de regresión semántica del proyecto: agregar el test
+  de regresión que DERIVA de specs/search-expectations.yaml (Capa B → tests) y afinar
+  los summaries del catálogo en español para que, con el MISMO modelo chico de inglés
+  (all-MiniLM-L6-v2 int8, ADR-001), las 5 queries de la spec devuelvan los juegos
+  esperados en su top-k. El test es un pytest parametrizado que lee el YAML en runtime,
+  vectoriza cada query SIN padding (mismo régimen que el browser, ADR-002) reusando
+  embed() de vectorize.py, rankea contra dist/embeddings.json y exige que must_include_any_of
+  caiga en el top-k. La calidad se logra afinando el CONTENIDO en español (ADR-003),
+  no cambiando el modelo ni traduciendo queries. Tras editar el catálogo se re-vectoriza
+  (dist/embeddings.json) y se re-emite el fixture del Paso 4 (query-vectors.reference.json),
+  manteniendo VERDE la equivalencia Python↔JS. Se alinean las docs: la demo estrella
+  "juego para jugar con amigos en el sillón" → Overcooked 2 pasa de aspiracional a
+  REAL. Español rioplatense, didáctico, para la defensa oral de 5 min.'
+start_commit: '0000000000000000000000000000000000000000'
+start_branch: ''
+opened_at: '2026-06-02T20:21:36.164474Z'
+status: closed
+mode: managed
+checkpoints:
+- timestamp: '2026-06-02T20:31:48.320513Z'
+  source: cortex-code-implementer
+  verified_claims:
+  - 'Hook semantic-regression (python -m pytest tests/ -q): exit 0, 10 passed (3 units
+    Paso 2 + 5 expectativas parametrizadas desde search-expectations.yaml + 1 estructura
+    embeddings + 1 regla YAML). El test NUEVO tests/test_search_regression.py lee
+    el YAML en runtime, reusa embed()/load_model() de vectorize.py con tokenizer.no_padding()
+    (ADR-002) y rankea por coseno contra dist/embeddings.json.'
+  - 'Hook equivalence-still-green (node --test tests/equivalence/embed.equiv.test.mjs):
+    exit 0, 7 pass / 0 fail, peor max|diff| = 4.470e-8 << 1e-5; ranking top-k JS identico
+    al Python de referencia tras re-emitir el fixture con el catalogo nuevo.'
+  - 'Hook js-pure-functions (node --test site/js/search.test.mjs): exit 0, 10 pass
+    / 0 fail. search.mjs sigue puro, no se toco.'
+  - 'Hook catalog-still-green (python scripts/validate_catalog.py): exit 0, 10/10
+    archivos validos. Summaries editados: overcooked-2 = 850 chars, hollow-knight
+    = 991 chars (ambos dentro de 80-1000), generos reales intactos.'
+  - 'Hook site-structure (python scripts/check_site.py): exit 0, sitio coherente,
+    embeddings.json dimensions=384, 10 items.'
+  - 'Hook ruff-lint (opcional, ruff check .): exit 0, All checks passed (incluye el
+    test nuevo).'
+  - 'TOP-5 FINAL de las 5 queries (query sin padding vs catalogo re-vectorizado):
+    ''souls-like para principiantes'' -> [hollow-knight, hades, gris, celeste, disco-elysium]
+    (hollow-knight #1, ANTES FALTABA); ''juego para jugar con amigos en el sillon''
+    -> [overcooked-2, gris, journey, disco-elysium, celeste] (overcooked-2 #1, ANTES
+    FALTABA); ''indie corto y emotivo con historia'' -> gris #1 (OK); ''rpg con elecciones
+    que importan'' -> disco-elysium #1, witcher-3 #2 (OK); ''plataformas con dificultad
+    muy alta'' -> celeste presente #4 (OK via celeste). Las 5 expectativas pasan.'
+  - 'Re-vectorizacion (python scripts/vectorize.py): exit 0, 10 juegos x 384 dims
+    regenerados en dist/embeddings.json. Re-emision (python scripts/emit_reference_vectors.py):
+    exit 0, 6 queries de referencia re-escritas en tests/fixtures/query-vectors.reference.json
+    (cambiaron los top_k_ids, no los vectores de las queries).'
+  - 'Baseline RED confirmado ANTES de editar: corriendo test_search_regression.py
+    contra el catalogo viejo fallaban EXACTAMENTE las 2 esperadas (souls-like->hollow-knight
+    y sillon->overcooked-2), 4 passed. El test efectivamente detecta la regresion,
+    no es falso verde.'
+  - 'specs/search-expectations.yaml NO se modifico (git status confirma: no aparece
+    en el diff). No se debilito ninguna expectativa. El test de regla del YAML pasa:
+    cada id de must_include_any_of existe como catalog/<id>.md.'
+  - 'Solo se tocaron files_in_scope: tests/test_search_regression.py (nuevo), catalog/overcooked-2.md,
+    catalog/hollow-knight.md, README.md, PRESENTACION.md (modificados), tests/fixtures/query-vectors.reference.json
+    y dist/embeddings.json (regenerados). git status confirma que dist/, models/ y
+    node_modules/ siguen gitignored (nada pesado staged).'
+  unverified_claims:
+  - La calidad semantica de OTRAS queries en espanol (fuera de las 5 de la spec) no
+    se midio; ADR-003 ya aceptó que pueden seguir flojas (alcance academico). El afinado
+    solo garantiza las expectativas declaradas.
+  - El equivalence test corrio con el modelo CACHEADO localmente; la dependencia de
+    red del HF Hub (primera bajada del modelo ~23MB) no se ejercito en esta corrida,
+    es dependencia conocida del Paso 4.
+  - El test de regresion hace pytest.skip con razon accionable si falta models/ o
+    dist/embeddings.json; el path de skip se razono pero no se forzó en esta corrida
+    (ambos artefactos estaban presentes). El path feliz si se ejercito.
+  - hollow-knight tambien es esperado en 'plataformas con dificultad muy alta' pero
+    ESA expectativa pasa via celeste (#4), no via hollow-knight (que no entro al top-5
+    de esa query). La expectativa es inclusion-only asi que pasa, pero el refuerzo
+    souls-like de hollow-knight no lo subio a esa query puntual.
+  artifacts_touched:
+  - tests/test_search_regression.py
+  - catalog/overcooked-2.md
+  - catalog/hollow-knight.md
+  - dist/embeddings.json
+  - tests/fixtures/query-vectors.reference.json
+  - README.md
+  - PRESENTACION.md
+  note: 'documenter: Paso 5 COMPLETO y VERDE, los 6 hooks en exit 0 (5 required +
+    1 optional). Se puede cerrar como ''closed'' (no handoff). Resumen del approach:
+    red de regresion semantica (Capa B->tests) + afinado de catalogo en espanol siguiendo
+    ADR-002 (query sin padding) y ADR-003 (afinar contenido, no cambiar modelo). NO
+    se creo ningun ADR nuevo: las decisiones de arquitectura (modelo fijo, query sin
+    padding) ya estan en ADR-001/002/003; el Paso 5 es la IMPLEMENTACION de lo que
+    ADR-003 difirio, no una decision nueva irreversible. Detalle editorial: tests/test_search_regression.py
+    NO duplica pooling/L2 (reusa embed/load_model de vectorize.py, DRY) y usa una
+    fixture de modulo para cargar el modelo una sola vez. Edge honesto a documentar:
+    la query ''plataformas con dificultad muy alta'' pasa SOLO via celeste, hollow-knight
+    NO entra al top-5 ahi pese al refuerzo souls-like (la expectativa es inclusion-only
+    con [celeste, hollow-knight], asi que pasa). Si en el futuro se quita celeste
+    de esa expectativa, romperia. README linea 5 (headline sillon->Overcooked2) ahora
+    es REAL y verificado. PRESENTACION: se reviso el fragmento Paso 4 para que no
+    sobrevenda (aclara que la equivalencia prueba IGUALDAD no CALIDAD, y que la demo
+    en espanol se difirio a Paso 5) y se appendeo el fragmento Paso 5 (3 parrafos).
+    Proximo paso natural: Paso 6 (GitHub Actions CI/CD), pero la spec pide PAUSAR
+    y esperar confirmacion del usuario antes de arrancarlo. NO se commiteó nada (el
+    usuario controla los commits)."'
+- timestamp: '2026-06-02T20:36:53.311815Z'
+  source: cortex-SDDwork
+  verified_claims:
+  - 'Paso 5 implementado (Deep Track, una delegación a cortex-code-implementer; explorer/designer
+    omitidos por contexto completo del Paso 4 + spec detallada). RE-VERIFIQUÉ los
+    gates críticos yo mismo: python -m pytest tests/ -q = exit 0 (10 passed: 3 units
+    del Paso 2 + 5 expectativas parametrizadas + estructura + regla YAML); equivalence
+    node --test = exit 0, 7/7, max|diff| 4.47e-8 (SIGUE verde tras re-emitir el fixture);
+    validate_catalog.py = exit 0. El implementer reportó search.test.mjs/check_site/ruff
+    en verde y review_checkpoint los aceptó.'
+  - 'Las 5 expectativas de search-expectations.yaml pasan. TOP-5 final: ''souls-like
+    para principiantes'' → hollow-knight #1; ''juego para jugar con amigos en el sillón''
+    → overcooked-2 #1; las otras 3 ya pasaban. La demo estrella del proyecto ahora
+    es REAL.'
+  - 'Los summaries editados son prosa NATURAL y honesta (los leí): overcooked-2 (850
+    chars) lidera con el marco couch-coop (es genuinamente un cooperativo de sillón),
+    hollow-knight (991 chars) con ''souls-like accesible, difícil pero justo'' sin
+    perder identidad metroidvania. Sin keyword-stuffing, sin repetir la query literal,
+    dentro del schema (80-1000).'
+  - search-expectations.yaml NO se modificó (git diff vacío) → la spec/Capa B no se
+    debilitó para forzar verde; el gate se pasó tuneando el catálogo (ADR-003).
+  - 'DRY cumplido: tests/test_search_regression.py es pytest parametrizado que lee
+    search-expectations.yaml en runtime y reusa embed()/load_model() de vectorize.py
+    con tokenizer.no_padding() (régimen browser, ADR-002). dist/embeddings.json re-vectorizado
+    (10×384) y query-vectors.reference.json re-emitido.'
+  unverified_claims:
+  - search.test.mjs (pureza), check_site.py y ruff los corrió el implementer en verde
+    y review_checkpoint aceptó el checkpoint; en esta ronda yo re-corrí pytest+equivalence+validate_catalog,
+    no esos tres (sí verificados en pasos previos).
+  - '''plataformas con dificultad muy alta'' pasa SOLO vía celeste; hollow-knight
+    no entró al top-5 de esa query pese al refuerzo souls-like. Es legítimo: la expectativa
+    es inclusión-only [celeste, hollow-knight].'
+  - El equivalence test depende de bajar el modelo del HF Hub la primera vez (red);
+    corrió con el modelo cacheado. En CI limpio sin red al Hub fallaría (dependencia
+    conocida del Paso 4).
+  - 'Comportamiento en browser real NO testeado, pero el Paso 5 NO tocó el wiring
+    del browser (search.mjs/vectorizer.mjs/app.mjs intactos): sólo contenido del catálogo
+    + test + docs.'
+  - cortex_ping reportó 'degraded' por el timeout viejo de cortex_create_spec (operación
+    del sync YA completada — la spec existe y la sesión está OPEN); es benigno, no
+    afectó nada.
+  artifacts_touched:
+  - tests/test_search_regression.py
+  - catalog/overcooked-2.md
+  - catalog/hollow-knight.md
+  - dist/embeddings.json
+  - tests/fixtures/query-vectors.reference.json
+  - README.md
+  - PRESENTACION.md
+  note: 'documenter: Paso 5 COMPLETO, los 6 hooks en verde (re-verifiqué pytest+equivalence+validate_catalog
+    yo mismo; review_checkpoint aceptó el resto) → cerrable como ''closed''. NO amerita
+    ADR nuevo: las decisiones de fondo ya están en ADR-003 (afinar catálogo en español,
+    no cambiar modelo) y ADR-002 (query sin padding) — este paso las IMPLEMENTA. La
+    nota de cierre puede referenciarlas. Logro central: la red de regresión semántica
+    (Capa B → pytest parametrizado desde search-expectations.yaml) ahora es un gate,
+    y el catálogo afinado hace que la demo ''amigos en el sillón''→Overcooked 2 sea
+    REAL (era over-claim en el Paso 4). search-expectations.yaml NO se tocó (git diff
+    vacío). PENDIENTE OPERATIVO (gitless, igual que Paso 4): commitear el trabajo
+    de Pasos 4 y 5 — nada pesado (models/, dist/, node_modules/ gitignored). PRÓXIMO:
+    Paso 6 (CI workflow .github/workflows/ci.yml) tras confirmación del usuario; el
+    CI debería correr estos mismos hooks.'
+verification_results: []
+tasks: []
+closed_at: '2026-06-02T20:40:49.427173Z'
+end_commit: '0000000000000000000000000000000000000000'
+documenter_decision: closed
+session_note_path: C:\Parcial2Calidad-CICD\.cortex\vault\sessions\2026-06-02_paso-5-tests-de-regresion-semantica-afinado-del-catalogo_cierre-paso-5-regresion-semantica.md
+adrs_created: []

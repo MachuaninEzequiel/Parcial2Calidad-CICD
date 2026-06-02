@@ -57,14 +57,16 @@ La pieza central: **el mismo `model.onnx` corre en dos lugares**. En el CI (con 
 
 ---
 
-## Estado actual — Pasos 1-4 ✅
+## Estado actual — Pasos 1-5 ✅
 
 - **Paso 1 ✅ · base SDD:** schema, expectativas, catálogo inicial (10 juegos) y el validador.
 - **Paso 2 ✅ · vectorización ONNX:** `scripts/vectorize.py` recorre el catálogo, lo pasa por **all-MiniLM-L6-v2** (ONNX), aplica mean pooling + normalización L2 y genera `dist/embeddings.json` (10 items, vectores de 384 dimensiones).
 - **Paso 3 ✅ · frontend estático + motor de ranking:** sitio en `site/` (HTML + CSS + JS vanilla, sin frameworks) que carga `embeddings.json`, lista los 10 juegos y permite **buscar juegos similares** por similitud coseno client-side. Las funciones puras (`cosineSimilarity`, `topK`) viven en `site/js/search.mjs` y se testean con el runner nativo `node:test`.
 - **Paso 4 ✅ · búsqueda por texto libre + equivalencia Python↔JS:** la caja de texto libre está **habilitada**. Al escribir una frase, el navegador la vectoriza con el **mismo `model.onnx`** del CI (vía **Transformers.js** = onnxruntime-web, que entra por un **import map → CDN**, sin npm install) y rankea el catálogo con la misma `topK`. La vectorización vive aislada en `site/js/vectorizer.mjs` para que `search.mjs` siga puro. Y el corazón del paso: un **test de equivalencia** (`tests/equivalence/embed.equiv.test.mjs`) prueba que el vector de JavaScript coincide con el de referencia de Python dentro de `1e-5` **y** que el ranking top-k es idéntico — la mitigación del riesgo #1 del ADR-001.
 
-> **Detalle clave de la equivalencia:** el catálogo (Paso 2) se vectoriza con el tokenizer pad-eando a 128 tokens; el navegador vectoriza la query **sin padding** (solo los tokens reales). Como el modelo es int8, el largo de secuencia afecta la cuantización, así que la referencia de Python (`scripts/emit_reference_vectors.py`) también vectoriza las queries **sin padding** para reproducir EXACTO lo que hace el browser. Con eso el diff cae de ~3e-2 a ~4e-8.
+- **Paso 5 ✅ · regresión semántica + catálogo afinado:** el loop SDD se cierra. `tests/test_search_regression.py` lee `specs/search-expectations.yaml` **en runtime** y genera un test parametrizado por expectativa (Capa B → tests): vectoriza cada query reusando el `embed()` de `vectorize.py` **sin padding** (régimen browser, ADR-002), rankea contra `dist/embeddings.json` por coseno y exige que `must_include_any_of` caiga en el top-k. Para que el ranking sea bueno con el modelo chico de inglés, se afinó el **contenido del catálogo en español** (ADR-003) en vez de cambiar de modelo: ahora *"juego para jugar con amigos en el sillón"* devuelve **Overcooked 2 en el puesto #1** y *"souls-like para principiantes"* devuelve **Hollow Knight en el #1**, ambas reales. La demo de la línea 5 ya no es aspiracional. En el CI (Paso 6), estos tests corren como gate junto al resto.
+
+> **Detalle clave de la equivalencia:** el catálogo (Paso 2) se vectoriza con el tokenizer pad-eando a 128 tokens; el navegador vectoriza la query **sin padding** (solo los tokens reales). Como el modelo es int8, el largo de secuencia afecta la cuantización, así que la referencia de Python (`scripts/emit_reference_vectors.py`) también vectoriza las queries **sin padding** para reproducir EXACTO lo que hace el browser. Con eso el diff cae de ~3e-2 a ~4e-8. El test de regresión del Paso 5 vectoriza la query con el MISMO régimen sin padding, así el ranking del gate coincide con el del navegador.
 
 ### Validar el catálogo localmente
 
@@ -114,7 +116,7 @@ node --test tests/equivalence/embed.equiv.test.mjs   # diff < 1e-5 y ranking id�
 
 ---
 
-## Estructura del repo (hasta el Paso 4)
+## Estructura del repo (hasta el Paso 5)
 
 ```
 .
@@ -141,6 +143,8 @@ node --test tests/equivalence/embed.equiv.test.mjs   # diff < 1e-5 y ranking id�
 │   ├── emit_reference_vectors.py # vectores de referencia Python para la equivalencia (Paso 4)
 │   └── check_site.py             # chequeo estructural del sitio (Pasos 3-4)
 ├── tests/
+│   ├── test_vectorize.py         # unitarios del Paso 2: mean_pooling, l2_normalize, estructura
+│   ├── test_search_regression.py # regresión semántica desde la spec (Capa B → tests) — Paso 5
 │   ├── equivalence/
 │   │   └── embed.equiv.test.mjs  # gate de equivalencia Python↔JS (Paso 4)
 │   └── fixtures/
@@ -154,4 +158,4 @@ node --test tests/equivalence/embed.equiv.test.mjs   # diff < 1e-5 y ranking id�
 └── README.md
 ```
 
-> **Próximos pasos:** tests de regresión semántica autogenerados desde `search-expectations.yaml` (Paso 5), GitHub Actions con el deploy a Pages y el hosting del modelo en producción (Paso 6), Docker (Paso 7) y la presentación oral (Paso 8).
+> **Próximos pasos:** GitHub Actions con el deploy a Pages y el hosting del modelo en producción (Paso 6), Docker (Paso 7) y la presentación oral (Paso 8).
