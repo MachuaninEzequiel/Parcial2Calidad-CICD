@@ -1,0 +1,37 @@
+2026-06-02 15:31:16,606 - cortex.episodic.memory_store - INFO - EpisodicMemoryStore initialized — collection 'cortex_episodic' has 9 entries
+2026-06-02 15:31:16,608 - cortex.mcp.server - INFO - Cortex MCP Server inicializado. Log file: C:\Parcial2Calidad-CICD\.cortex\logs\mcp_calls_20260602_153116.log
+2026-06-02 15:31:16,617 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2026-06-02 15:32:00,215 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 15:32:00,216 - cortex.mcp.server - INFO - TOOL_CALL: cortex_ping | args: {}
+2026-06-02 15:32:00,219 - cortex.mcp.server - INFO - TOOL_CALL: cortex_ping | args: {}
+2026-06-02 15:32:00,219 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_ping | {
+  "status": "ok",
+  "version": "2.2",
+  "uptime_seconds": 43.804,
+  "indices_loaded": true,
+  "models_loaded": [],
+  "last_error_seen": null,
+  "recent_errors_count": 0,
+  "error_window_seconds": 30...
+2026-06-02 15:32:05,558 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 15:32:05,570 - cortex.embedders.onnx - INFO - Loading ONNX embedding function (ONNXMiniLM_L6_V2)...
+2026-06-02 15:32:07,310 - cortex.semantic.vault_reader - INFO - Vault indexed: 15 documents
+2026-06-02 15:37:15,486 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 16:18:19,045 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 16:18:23,253 - cortex.semantic.vault_reader - INFO - Vault indexed: 16 documents
+2026-06-02 16:19:23,756 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 16:19:23,757 - cortex.mcp.server - INFO - TOOL_CALL: cortex_ping | args: {}
+2026-06-02 16:19:23,758 - cortex.mcp.server - INFO - TOOL_CALL: cortex_ping | args: {}
+2026-06-02 16:19:23,758 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_ping | {
+  "status": "degraded",
+  "version": "2.2",
+  "uptime_seconds": 2887.344,
+  "indices_loaded": true,
+  "models_loaded": [
+    "onnx-embeddings"
+  ],
+  "last_error_seen": {
+    "tool": "cortex_create_...
+2026-06-02 16:21:00,431 - cortex.session.service - WARNING - Opening session 2026-06-02_paso-4-vectorizacion-de-la-query-en-el-navegador-onnxruntime-web-via-transformersjs-busqueda-por-texto-libre-equivalencia-pythonjs in gitless mode (no git repository at C:\Parcial2Calidad-CICD). Documenter will reconstruct from checkpoints only.
+2026-06-02 16:21:00,443 - cortex.session.service - INFO - Opened session 2026-06-02_paso-4-vectorizacion-de-la-query-en-el-navegador-onnxruntime-web-via-transformersjs-busqueda-por-texto-libre-equivalencia-pythonjs in gitless mode
+2026-06-02 16:21:00,841 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_create_spec | Specification saved -> C:\Parcial2Calidad-CICD\.cortex\vault\specs\2026-06-02_paso-4-vectorizacion-de-la-query-en-el-navegador-onnxruntime-web-via-transformersjs-busqueda-por-texto-libre-equivalencia-...

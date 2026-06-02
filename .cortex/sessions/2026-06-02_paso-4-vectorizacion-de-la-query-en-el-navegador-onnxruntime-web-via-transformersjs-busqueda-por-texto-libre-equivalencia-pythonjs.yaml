@@ -1,0 +1,267 @@
+session_id: 2026-06-02_paso-4-vectorizacion-de-la-query-en-el-navegador-onnxruntime-web-via-transformersjs-busqueda-por-texto-libre-equivalencia-pythonjs
+spec_path: C:\Parcial2Calidad-CICD\.cortex\vault\specs\2026-06-02_paso-4-vectorizacion-de-la-query-en-el-navegador-onnxruntime-web-via-transformersjs-busqueda-por-texto-libre-equivalencia-pythonjs.md
+spec_summary: 'Implementar de verdad el seam vectorizeQuery() para que el navegador
+  convierta el texto libre del usuario en un vector de 384 dims usando el MISMO modelo
+  del catálogo (Xenova/all-MiniLM-L6-v2 quantized), vía Transformers.js (que es onnxruntime-web
+  por debajo) con feature-extraction + {pooling:''mean'', normalize:true}. Habilitar
+  la caja de búsqueda por texto libre, reusar tal cual topK/cosineSimilarity de search.mjs
+  para rankear contra los embeddings precomputados, y —el corazón del paso— PROBAR
+  la equivalencia de vectorización Python↔JS (riesgo #1 del ADR-001) con un golden
+  test: el lado Python emite vectores de referencia para queries fijas y un test en
+  Node verifica que el lado JS coincide dentro de tolerancia (objetivo 1e-5) Y que
+  el ranking top-k es idéntico. search.mjs queda 100% puro (la vectorización del browser
+  vive en un módulo nuevo) para que sus tests sigan con node:test sin dependencias.
+  Español rioplatense, didáctico, pensado para la defensa oral de 5 min.'
+start_commit: '0000000000000000000000000000000000000000'
+start_branch: ''
+opened_at: '2026-06-02T19:21:00.431568Z'
+status: closed
+mode: observed
+checkpoints:
+- timestamp: '2026-06-02T19:27:20.887834Z'
+  source: cortex-code-designer
+  verified_claims:
+  - 'Exploración read-only completa: leí search.mjs (seam vectorizeQuery lanza Error
+    ''Paso 4'' líneas 76-95; cosineSimilarity+topK puras), app.mjs (fetch ../dist/embeddings.json,
+    showSimilar reusa topK), index.html (input#free-query disabled + nota 🔒 Paso 4),
+    search.test.mjs (importa+testea vectorizeQuery /Paso 4/ líneas 13,88-90), vectorize.py
+    (embed/mean_pooling/l2_normalize reusables), check_site.py, catalog_io.py, search-expectations.yaml
+    (5 queries), styles.css, README.md, PRESENTACION.md.'
+  - 'Entorno verificado: models/model.onnx (22MB int8) + tokenizer.json presentes;
+    dist/embeddings.json (10 items, 384 dims) presente; node v22.19.0, npm 11.6.0,
+    python 3.13.7 con onnxruntime/tokenizers/pyyaml ya en pyproject. El gate de equivalencia
+    PUEDE correr localmente.'
+  - 'Design doc escrito en vault/designs/<session_id>.md con: aislar Transformers.js
+    en vectorizer.mjs (search.mjs queda puro), import map browser↔devDependency Node
+    con misma versión, dtype:''q8'' para cargar model_quantized.onnx int8 (igual que
+    Python), emit_reference_vectors.py reusa embed() de vectorize.py (refactor mínimo
+    load_model()), test de equivalencia con diff<tolerance + identidad de ranking
+    top-k como gate duro, lazy import en app.mjs, check_site.py con re para input
+    habilitado.'
+  unverified_claims:
+  - 'La tolerancia 1e-5 sobre el modelo int8 entre ort-Python y onnxruntime-node es
+    objetivo, no garantía: si no entra, el design manda relajar la tolerancia documentándola
+    y mantener la identidad de ranking como gate duro (riesgo #1 ADR-001).'
+  - El subagent cortex-code-designer NO está registrado en este IDE (solo explorer+implementer);
+    el rol designer lo cubrí yo desde cortex-SDDwork escribiendo el design doc a mano.
+  - El knob de cuantización correcto depende de la versión de @huggingface/transformers
+    que instale el implementer (v3=dtype:'q8', no v2 {quantized:true}); debe verificar
+    que carga model_quantized.onnx.
+  artifacts_touched:
+  - .cortex/vault/designs/2026-06-02_paso-4-vectorizacion-de-la-query-en-el-navegador-onnxruntime-web-via-transformersjs-busqueda-por-texto-libre-equivalencia-pythonjs.md
+  note: 'documenter: Deep Track. Exploración+diseño hechos por SDDwork (designer no
+    registrado en IDE). El corazón del paso es la equivalencia Python↔JS (riesgo #1
+    ADR-001); el design fija identidad de ranking como gate duro y tolerancia numérica
+    como objetivo relajable+documentable. Próximo: delegar a cortex-code-implementer
+    con el design doc.'
+- timestamp: '2026-06-02T19:27:55.816586Z'
+  source: cortex-code-designer
+  verified_claims:
+  - 'Exploración read-only completa de los 13 archivos en scope + entorno. search.mjs:
+    seam vectorizeQuery lanza Error ''Paso 4'' (líneas 76-95), cosineSimilarity+topK
+    puras. search.test.mjs importa+testea vectorizeQuery /Paso 4/ (líneas 13, 88-90)
+    → hay que sacarlos. app.mjs: showSimilar reusa topK, items no se guardan a nivel
+    módulo. index.html: input#free-query disabled + nota 🔒 Paso 4. vectorize.py: embed/mean_pooling/l2_normalize
+    reusables. search-expectations.yaml: 5 queries fijas.'
+  - 'Entorno verificado: models/model.onnx (22MB int8) + tokenizer.json presentes;
+    dist/embeddings.json (10 items, 384 dims) presente; node v22.19.0, npm 11.6.0,
+    python 3.13.7 con onnxruntime/tokenizers/pyyaml en pyproject. El gate de equivalencia
+    PUEDE correr localmente.'
+  - Design doc completo persistido (ver note para el path) con todas las decisiones
+    de arquitectura, contratos de API, test plan y reglas de decisión de riesgo que
+    el implementer debe seguir.
+  unverified_claims:
+  - 'Tolerancia 1e-5 sobre int8 entre ort-Python y onnxruntime-node es objetivo, no
+    garantía: si no entra, relajar tolerancia documentándola y mantener identidad
+    de ranking top-k como gate duro (riesgo #1 ADR-001).'
+  - El knob de cuantización correcto depende de la versión de @huggingface/transformers
+    (v3=dtype:'q8', no v2 {quantized:true}); el implementer debe verificar que carga
+    model_quantized.onnx (no fp32).
+  artifacts_touched: []
+  note: 'documenter: Deep Track, fase de diseño. El design doc vive en .cortex/vault/designs/2026-06-02_paso-4-...equivalencia-pythonjs.md
+    (artifact de proceso del vault, fuera del code-scope a propósito; el subagent
+    cortex-code-designer no está registrado en este IDE, así que el rol lo cubrió
+    cortex-SDDwork). Corazón del paso: equivalencia Python↔JS (riesgo #1 ADR-001)
+    — identidad de ranking como gate duro, tolerancia numérica como objetivo relajable+documentable.
+    No se tocó ningún archivo de código en scope todavía. Próximo: delegar implementación
+    a cortex-code-implementer.'
+- timestamp: '2026-06-02T19:45:00.473751Z'
+  source: cortex-code-implementer
+  verified_claims:
+  - 'TODOS los 8 comandos de verificacion pasan con exit 0 (corridos en orden desde
+    la raiz): CMD1 vectorize.py=0, CMD2 emit_reference_vectors.py=0, CMD3 npm install=0,
+    CMD4 equivalence test=0, CMD5 search.test.mjs=0, CMD6 check_site.py=0, CMD7 validate_catalog.py=0,
+    CMD8 ruff check .=0.'
+  - 'EQUIVALENCIA (riesgo #1 ADR-001) LOGRADA dentro del objetivo 1e-5 SIN relajar:
+    max|diff| observado = 4.470e-8 (peor query: ''juego para jugar con amigos en el
+    sillon''). tolerance del fixture quedo en 1e-5. Las 6 queries pasan diff<1e-5
+    Y ranking top-k identico (gate duro). Test: 7 pass, 0 fail.'
+  - 'ROOT CAUSE encontrado y resuelto: el diff inicial era ~3e-2 (ranking divergia
+    en 2/6 queries). Causa: el tokenizer.json pad-ea a 128 tokens; vectorize.py corre
+    el modelo sobre secuencias de 128, Transformers.js en el browser NO pad-ea (solo
+    tokens reales). En el modelo int8 la cuantizacion dinamica depende del largo de
+    secuencia, asi que padded!=unpadded. Medido: PY padded-vs-unpadded da EXACTAMENTE
+    el mismo diff que PY-padded-vs-JS (2.9605e-2 identico para ''hola''), confirmando
+    que el padding era el 100% del diff. Fix: emit_reference_vectors.py llama tokenizer.no_padding()
+    para vectorizar las queries (igual que el browser). NO toca vectorize.py: embeddings.json
+    del Paso 2 queda identico (10 items, regenerado y verificado). La asimetria query-sin-padding
+    / catalogo-con-padding es la realidad de produccion (query en browser, catalogo
+    en CI batch).'
+  - 'Modelo verificado BYTE-IDENTICO entre los dos lados: md5(models/model.onnx) ==
+    md5(cache HF onnx/model_quantized.onnx) == 704fb8674c8a2e729e0f6b71905d66f8 (22972370
+    bytes). dtype:''q8'' en @huggingface/transformers carga el quantized correcto
+    (NO fp32).'
+  - 'Version pineada EXACTA y coincidente: @huggingface/transformers@4.2.0 en package.json
+    (devDependencies) Y en el import map de index.html (cdn.jsdelivr.net/.../@4.2.0/dist/transformers.min.js).
+    npm ls confirma 4.2.0 instalada; pipeline carga ok.'
+  - 'search.mjs queda PURO: solo exporta cosineSimilarity y topK (se elimino el seam
+    vectorizeQuery). node --test site/js/search.test.mjs = 10 pass 0 fail SIN dependencias
+    npm (aunque node_modules tiene transformers). Se quito el import de vectorizeQuery
+    y el test /Paso 4/ de search.test.mjs.'
+  - 'DRY cumplido: emit_reference_vectors.py reusa embed() + nuevo helper load_model()
+    de vectorize.py (refactor minimo, sin cambiar output Paso 2). La busqueda por
+    texto libre en app.mjs reusa topK tal cual y se extrajo renderResults() compartido
+    entre showSimilar y el handler de texto libre. vectorizer.mjs aisla Transformers.js
+    (lazy import via await import en app.mjs).'
+  - 'check_site.py exit 0 con los nuevos checks: vectorizer.mjs en REQUIRED_FILES,
+    input free-query SIN disabled (regex), <script type=importmap> presente, ya no
+    aparece ''Disponible en el Paso 4''. Todos verdes.'
+  - 'Nada pesado commiteable: git check-ignore confirma node_modules/dist/models/model.onnx
+    ignorados; git status no muestra ningun .onnx/node_modules/embeddings.json. .gitignore
+    agrega node_modules/ y .cache/.'
+  unverified_claims:
+  - El comportamiento en un BROWSER REAL no se probo (no hay browser en este entorno).
+    El wiring del DOM (form submit, lazy import de vectorizer.mjs via import map al
+    CDN, estado de carga, manejo de error) esta implementado segun el design pero
+    solo se valido la logica via los tests de Node; queda probar manualmente con `python
+    -m http.server 8000` -> http://localhost:8000/site/ que la primera busqueda baja
+    el modelo del CDN y rankea.
+  - 'El import map apunta a cdn.jsdelivr.net/npm/@huggingface/transformers@4.2.0/dist/transformers.min.js:
+    la ruta del bundle ESM en el CDN no se verifico con un fetch real (en Node se
+    uso la devDependency, no el CDN). Si el path del dist en jsdelivr difiere para
+    v4, hay que ajustarlo (es solo el string del import map, no cambia la equivalencia).'
+  - El equivalence test baja el modelo del HF Hub la primera vez (~23MB). En este
+    entorno ya estaba cacheado y descargo OK; en un CI limpio sin red al Hub el test
+    fallaria por no poder bajar el modelo (es una dependencia de red conocida, documentada
+    en el spec).
+  - 'El ranking de referencia NO coincide con las expectativas semanticas de search-expectations.yaml
+    (ej. overcooked-2 no esta en top-5 de ''amigos en el sillon''). Eso es ESPERADO
+    y fuera de alcance: la regresion semantica es del Paso 5. El Paso 4 solo prueba
+    que JS reproduce el ranking de Python (sea cual sea), no la calidad semantica.'
+  artifacts_touched:
+  - site/js/vectorizer.mjs
+  - site/js/search.mjs
+  - site/js/search.test.mjs
+  - site/js/app.mjs
+  - site/index.html
+  - site/css/styles.css
+  - scripts/emit_reference_vectors.py
+  - scripts/vectorize.py
+  - tests/equivalence/embed.equiv.test.mjs
+  - tests/fixtures/query-vectors.reference.json
+  - package.json
+  - .gitignore
+  - scripts/check_site.py
+  - README.md
+  - PRESENTACION.md
+  note: 'documenter: Paso 4 COMPLETO, todos los hooks required en VERDE (exit 0).
+    La sesion deberia cerrarse como ''closed'', no handoff. El hallazgo tecnico fuerte
+    para la doc/defensa: la equivalencia Python<->JS fallaba (diff 3e-2, ranking divergente)
+    por el PADDING, no por el modelo. El tokenizer pad-ea a 128; el browser no. En
+    int8 el largo de secuencia mueve la cuantizacion. Se confirmo midiendo que PY-padded-vs-PY-unpadded
+    == PY-padded-vs-JS (mismo diff exacto). Fix elegante y CORRECTO: emit_reference_vectors.py
+    vectoriza la query sin padding (no_padding()) reproduciendo el browser; NO se
+    toca vectorize.py (Paso 2 intacto, embeddings.json identico). La asimetria query-sin-padding/catalogo-con-padding
+    NO es bug: es la realidad del sistema (query vectorizada en vivo en el browser,
+    catalogo precomputado en CI). Diff final 4.47e-8 << 1e-5, tolerancia objetivo
+    CUMPLIDA sin relajar. CANDIDATO A ADR (cumple 3 criterios: hard-to-reverse, surprising,
+    trade-off): ''Equivalencia Python<->JS se logra vectorizando la query SIN padding
+    en ambos lados'' — surprising (el padding parecia inocuo, deberia enmascararse),
+    trade-off (asimetria query/catalogo vs re-vectorizar todo sin padding), y fija
+    un invariante del sistema. Vale documentarlo como decision/ADR ligado al riesgo
+    #1 del ADR-001. Pendiente para el usuario antes del Paso 5: smoke test manual
+    en browser real (http.server + abrir el sitio, tipear una frase) y confirmar que
+    el path del CDN ESM @4.2.0/dist/transformers.min.js resuelve (lo unico no verificado
+    por red). search.mjs quedo puro y testeado; el seam viejo se elimino limpio."'
+- timestamp: '2026-06-02T19:58:09.417146Z'
+  source: cortex-SDDwork
+  verified_claims:
+  - 'Paso 4 implementado (Deep Track: diseño por SDDwork + implementación por cortex-code-implementer).
+    RE-VERIFIQUÉ yo mismo los 5 gates, no confíé en el reporte: js-equivalence node
+    --test tests/equivalence/embed.equiv.test.mjs = exit 0, 7/7, worst max|diff|=4.470e-8
+    < 1e-5 (tolerancia NO relajada); js-pure-functions node --test site/js/search.test.mjs
+    = exit 0, 10/10 sin npm (search.mjs quedó puro); check_site.py = exit 0; validate_catalog.py
+    = exit 0; ruff check . = exit 0.'
+  - vectorizer.mjs aísla @huggingface/transformers@4.2.0 con dtype:'q8' (carga model_quantized.onnx
+    int8, mismo artefacto que Python; verificado md5 byte-idéntico por el implementer).
+    app.mjs usa lazy import + renderResults DRY + form handler; index.html con import
+    map @4.2.0 y caja habilitada; emit_reference_vectors.py reusa embed()+load_model()
+    de vectorize.py (DRY). package.json type:module, devDep solo para el gate; node_modules/.cache/dist/models
+    gitignored (git check-ignore confirmado).
+  - 'Hallazgo del implementer confirmado y correcto: el padding a 128 desplaza la
+    cuantización int8 (~3e-2 diff); vectorizando la query sin padding (como el browser)
+    el diff cae a 4e-8. emit_reference_vectors.py usa tokenizer.no_padding(); vectorize.py
+    (Paso 2) NO cambió, embeddings.json idéntico (10 items, 384 dims).'
+  unverified_claims:
+  - 'CALIDAD SEMÁNTICA (fuera del scope de Paso 4, es gate de Paso 5) — hallazgo del
+    orquestador al verificar resultados reales: all-MiniLM-L6-v2 es un modelo de INGLÉS
+    y rinde mal con queries cortas en ESPAÑOL; casi toda query devuelve el mismo set
+    (gris/journey/disco-elysium/celeste/hades). La demo estrella ''juego para jugar
+    con amigos en el sillón'' NO devuelve Overcooked 2 (sí lo devuelve #1 con la query
+    en inglés). El gate de equivalencia NO detecta esto: solo prueba que Python y
+    JS COINCIDEN, no que el resultado sea semánticamente bueno.'
+  - 'DOC OVER-CLAIM: README línea 5 (headline, preexistente de Paso 1) y PRESENTACION
+    línea 52 (escrita en Paso 4: ''que aparezca el top-5 con Overcooked 2 en la lista'')
+    prometen una demo que en vivo/en español FALLARÍA con el catalogo actual.'
+  - 'FIX PROBADO por el orquestador (experimento): reescribir el summary de overcooked-2.md
+    en español natural liderando con el marco ''jugar con amigos en el sillón / cooperativo
+    / multijugador local'' sube a Overcooked 2 al puesto #1 (score 0.728) SIN modelo
+    multilingüe y sin keyword-stuffing. El summary original mencionaba la frase una
+    sola vez, diluida en texto largo. Decisión del usuario: mantener modelo chico
+    y afinar el catalogo en español para que ''ese caso'' ande.'
+  - 'Editar catalog/*.md está FUERA de files_in_scope de Paso 4 (es Capa C / Paso
+    5). No lo toqué en esta sesión (hard rule Cortex: no trabajar fuera de scope ni
+    crear spec desde SDDwork).'
+  - site/js/search.test.mjs se editó (sacar el import y el test /Paso 4/ del seam
+    que se mudó a vectorizer.mjs) por necesidad mecánica, pero NO figura en files_in_scope
+    de la spec (omisión del frontmatter; el cuerpo Requirements sí pide quitar el
+    seam y mantener ese test verde). review_checkpoint lo marcó como out-of-scope.
+  - 'Browser real NO probado (no hay navegador en el entorno): el wiring del DOM se
+    validó por lógica. Falta smoke test manual (python -m http.server 8000 → /site/).'
+  artifacts_touched:
+  - site/js/vectorizer.mjs
+  - site/js/search.mjs
+  - site/js/app.mjs
+  - site/index.html
+  - site/css/styles.css
+  - scripts/emit_reference_vectors.py
+  - scripts/vectorize.py
+  - tests/equivalence/embed.equiv.test.mjs
+  - tests/fixtures/query-vectors.reference.json
+  - package.json
+  - .gitignore
+  - scripts/check_site.py
+  - README.md
+  - PRESENTACION.md
+  note: 'documenter: el OBJETIVO de Paso 4 (vectorización en browser + gate de equivalencia
+    Python↔JS, riesgo #1 ADR-001) está COMPLETO y todos los hooks required pasan →
+    a nivel scope-de-Paso-4 es cerrable como ''closed''. PERO hay 2 cosas a registrar/decidir:
+    (1) las docs (README línea 5, PRESENTACION línea 52) prometen la demo ''sillón→Overcooked
+    2'' que HOY no anda con el modelo chico + catalogo actual; (2) el usuario decidió
+    NO ir a modelo multilingüe y afinar el catalogo en español — eso es Capa C / fuera
+    de scope de Paso 4. Recomendación: cerrar Paso 4 y arrancar /cortex-sync para
+    una spec chica (o el Paso 5) que cubra: afinar summaries del catalogo en español
+    (overcooked-2, hollow-knight, etc.) + re-vectorizar + re-emitir el fixture + alinear
+    README/PRESENTACION con la realidad. Hay un buen candidato a ADR sobre ''modelo
+    inglés vs queries en español: alinear el contenido del catalogo en vez de cambiar
+    el modelo''. search.test.mjs quedó fuera de files_in_scope (ver unverified) aunque
+    su edición era obligatoria.'
+verification_results: []
+tasks: []
+closed_at: '2026-06-02T20:11:29.261250Z'
+end_commit: '0000000000000000000000000000000000000000'
+documenter_decision: closed
+session_note_path: C:\Parcial2Calidad-CICD\.cortex\vault\sessions\2026-06-02_paso-4-vectorizacion-de-la-query-en-el-navegador-onnxruntime-web-via-transformersjs-busqueda-por-texto-libre-equivalencia-pythonjs_cierre-paso-4-equivalencia.md
+adrs_created:
+- C:\Parcial2Calidad-CICD\.cortex\vault\decisions\ADR-002-equivalencia-python-js-query-sin-padding.md
+- C:\Parcial2Calidad-CICD\.cortex\vault\decisions\ADR-003-modelo-ingles-vs-queries-en-espanol.md

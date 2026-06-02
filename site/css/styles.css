@@ -1,0 +1,324 @@
+/* styles.css — Estilos propios, sin frameworks. Pensados para una demo en
+   proyector: buen contraste, tipografía grande y un grid de cards responsive. */
+
+:root {
+  --bg: #0f1226;
+  --bg-card: #1b1f3b;
+  --bg-elev: #242a52;
+  --fg: #f2f4ff;
+  --fg-dim: #aab0d6;
+  --accent: #6c8cff;
+  --accent-strong: #8aa2ff;
+  --chip-bg: #2e356b;
+  --ok: #58d68d;
+  --error-bg: #3a1f2b;
+  --error-fg: #ffb3c1;
+  --radius: 14px;
+  --shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  line-height: 1.55;
+}
+
+main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 3rem;
+}
+
+/* --- Header ------------------------------------------------------------- */
+.hero {
+  text-align: center;
+  padding: 2.5rem 1.25rem 1.5rem;
+  background: linear-gradient(180deg, #161a38 0%, var(--bg) 100%);
+}
+
+.hero h1 {
+  margin: 0 0 0.5rem;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+}
+
+.lead {
+  max-width: 720px;
+  margin: 0 auto;
+  color: var(--fg-dim);
+  font-size: clamp(1rem, 2vw, 1.2rem);
+}
+
+h2 {
+  font-size: 1.4rem;
+  margin: 1.5rem 0 0.75rem;
+}
+
+/* --- Caja de búsqueda por texto libre (Paso 4, activa) ------------------ */
+.search-box {
+  background: var(--bg-card);
+  border: 1px solid var(--bg-elev);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  margin-top: 1rem;
+}
+
+.search-form {
+  display: flex;
+  gap: 0.6rem;
+  align-items: stretch;
+}
+
+.search-box input[type="search"] {
+  flex: 1;
+  width: 100%;
+  padding: 0.85rem 1rem;
+  font-size: 1.05rem;
+  border-radius: 10px;
+  border: 1px solid var(--bg-elev);
+  background: #12152e;
+  color: var(--fg);
+  cursor: text;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.search-box input[type="search"]:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(108, 140, 255, 0.25);
+}
+
+.search-box input[type="search"]:disabled {
+  cursor: progress;
+  opacity: 0.65;
+}
+
+.search-btn {
+  background: var(--accent);
+  color: #0c0f22;
+  border: none;
+  border-radius: 10px;
+  padding: 0.6rem 1.3rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s ease, transform 0.05s ease;
+}
+
+.search-btn:hover:not(:disabled) {
+  background: var(--accent-strong);
+}
+
+.search-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.search-btn:disabled {
+  cursor: progress;
+  opacity: 0.7;
+}
+
+/* Estado de carga: mensaje con un puntito que pulsa mientras baja el modelo. */
+.search-status {
+  color: var(--accent-strong);
+  font-size: 0.92rem;
+  margin: 0.7rem 0 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.search-status::before {
+  content: "";
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 999px;
+  background: var(--accent);
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+.note {
+  color: var(--fg-dim);
+  font-size: 0.95rem;
+  margin: 0.75rem 0 0;
+}
+
+/* --- Catálogo (grid de cards) ------------------------------------------ */
+.catalog {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.1rem;
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--bg-elev);
+  border-radius: var(--radius);
+  padding: 1.1rem 1.2rem 1.3rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow);
+}
+
+.card h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.25rem;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.year {
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--fg-dim);
+}
+
+.genres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.7rem;
+}
+
+.chip {
+  background: var(--chip-bg);
+  color: var(--accent-strong);
+  font-size: 0.78rem;
+  padding: 0.18rem 0.6rem;
+  border-radius: 999px;
+  letter-spacing: 0.02em;
+}
+
+.summary {
+  color: var(--fg-dim);
+  font-size: 0.95rem;
+  margin: 0 0 1rem;
+  flex: 1;
+}
+
+.similar-btn {
+  align-self: flex-start;
+  background: var(--accent);
+  color: #0c0f22;
+  border: none;
+  border-radius: 10px;
+  padding: 0.6rem 1.1rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.05s ease;
+}
+
+.similar-btn:hover {
+  background: var(--accent-strong);
+}
+
+.similar-btn:active {
+  transform: translateY(1px);
+}
+
+/* --- Resultados --------------------------------------------------------- */
+.results:empty {
+  display: none;
+}
+
+.results {
+  background: var(--bg-elev);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 1.1rem 1.4rem 1.4rem;
+  margin-top: 1.25rem;
+}
+
+.result-list {
+  margin: 0;
+  padding-left: 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.result-item {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 1.05rem;
+}
+
+.result-title {
+  font-weight: 600;
+}
+
+.result-score {
+  font-family: "Consolas", "SF Mono", monospace;
+  font-size: 0.85rem;
+  color: var(--ok);
+  white-space: nowrap;
+}
+
+/* --- Estados: cargando / error ----------------------------------------- */
+.loading {
+  color: var(--fg-dim);
+}
+
+.error {
+  background: var(--error-bg);
+  border: 1px solid var(--error-fg);
+  border-radius: var(--radius);
+  padding: 1.1rem 1.4rem;
+  color: var(--error-fg);
+  grid-column: 1 / -1;
+}
+
+.error code {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 0.1rem 0.35rem;
+  border-radius: 6px;
+}
+
+.error-detail {
+  font-family: "Consolas", "SF Mono", monospace;
+  font-size: 0.85rem;
+  opacity: 0.85;
+  margin-bottom: 0;
+}
+
+/* --- Footer ------------------------------------------------------------- */
+.footer {
+  text-align: center;
+  color: var(--fg-dim);
+  font-size: 0.85rem;
+  padding: 1.5rem 1.25rem 2.5rem;
+  border-top: 1px solid var(--bg-elev);
+}
+
+/* Responsive: en pantallas chicas, una sola columna y header más compacto. */
+@media (max-width: 560px) {
+  .catalog {
+    grid-template-columns: 1fr;
+  }
+  .hero {
+    padding: 1.75rem 1rem 1rem;
+  }
+}

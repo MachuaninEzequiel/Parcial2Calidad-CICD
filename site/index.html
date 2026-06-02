@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>🎮 Buscador Semántico de Videojuegos</title>
+    <link rel="stylesheet" href="css/styles.css" />
+
+    <!-- Import map (Paso 4): resuelve el bare specifier '@huggingface/transformers'
+         que usa site/js/vectorizer.mjs, apuntándolo al CDN ESM. Así el MISMO
+         módulo corre en el browser SIN bundler ni npm install. La versión DEBE
+         coincidir EXACTO con la devDependency de package.json (4.2.0) para que el
+         browser y el gate de equivalencia en Node ejecuten el mismo código. -->
+    <script type="importmap">
+      {
+        "imports": {
+          "@huggingface/transformers": "https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.2.0/dist/transformers.min.js"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <header class="hero">
+      <h1>🎮 Buscador Semántico de Videojuegos</h1>
+      <p class="lead">
+        Buscá juegos por <strong>significado</strong>, no por palabras clave:
+        cada juego es un vector de 384 números y comparamos por cercanía
+        semántica con la <em>similitud coseno</em>.
+      </p>
+    </header>
+
+    <main>
+      <!-- Búsqueda por texto libre (Paso 4): el modelo ONNX corre en TU navegador
+           (onnxruntime-web vía Transformers.js) para vectorizar la frase y
+           rankear el catálogo por similitud coseno. -->
+      <section class="search-box" aria-labelledby="search-title">
+        <h2 id="search-title">Búsqueda por texto libre</h2>
+        <form id="search-form" class="search-form" role="search">
+          <input
+            type="search"
+            id="free-query"
+            name="free-query"
+            placeholder="Ej.: juego para jugar con amigos en el sillón"
+            autocomplete="off"
+          />
+          <button type="submit" id="search-btn" class="search-btn">Buscar</button>
+        </form>
+        <p id="search-status" class="search-status" aria-live="polite" hidden></p>
+        <p class="note">
+          ✍️ Escribí una frase y buscá por <strong>significado</strong>. La
+          <strong>primera</strong> búsqueda baja el modelo (~23 MB) al navegador y
+          puede tardar unos segundos; después es instantánea. También podés usar
+          <strong>“Buscar similares”</strong> en cada card de abajo (no necesita
+          el modelo).
+        </p>
+      </section>
+
+      <!-- Resultados de "buscar similares". Se llena dinámicamente. -->
+      <section id="resultados" class="results" aria-live="polite"></section>
+
+      <!-- Catálogo: una card por juego. Se llena desde embeddings.json. -->
+      <section aria-labelledby="catalog-title">
+        <h2 id="catalog-title">Catálogo</h2>
+        <div id="catalogo" class="catalog">
+          <p class="loading">Cargando catálogo…</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>
+        Proyecto CI/CD · Spec Driven Development · Paso 4 (vectorización en el
+        navegador). El mismo <code>model.onnx</code> del CI vectoriza tu búsqueda
+        acá, en tu navegador.
+      </p>
+    </footer>
+
+    <script type="module" src="js/app.mjs"></script>
+  </body>
+</html>

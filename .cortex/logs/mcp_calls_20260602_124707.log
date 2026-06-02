@@ -82,3 +82,85 @@ Arrancar el Proyecto Integrador "Buscador Semántico de Videojuegos con CI/CD" pa
 2026-06-02 13:37:56,211 - cortex.session.service - INFO - Closed session 2026-06-02_paso-1-schema-spec-y-catalogo-inicial-buscador-semantico-de-videojuegos-con-cicd as closed (mode=managed, end=00000000)
 2026-06-02 13:37:56,211 - cortex.mcp.server - INFO - TOOL_CALL: cortex_close_session | args: {'status': 'closed', 'session_note_path': 'C:\\Parcial2Calidad-CICD\\.cortex\\vault\\sessions\\2026-06-02_paso-1-schema-spec-y-catalogo-inicial-buscador-semantico-de-videojuegos-con-cicd_paso-1-base-sdd-schema-spec-catalogo-y-validador.md', 'adrs_created': ['C:\\Parcial2Calidad-CICD\\.cortex\\vault\\decisions\\ADR-001-arquitectura-100-estatica-con-modelo-onnx-dual-runtime-ci-browser.md']}
 2026-06-02 13:37:56,211 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_close_session | {"session_id": "2026-06-02_paso-1-schema-spec-y-catalogo-inicial-buscador-semantico-de-videojuegos-con-cicd", "final_status": "closed", "mode": "managed", "closed_at": "2026-06-02T16:37:56.204390+00:0...
+2026-06-02 13:48:02,589 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 13:48:03,232 - cortex.context_enricher.co_occurrence - INFO - Built graph with 17 nodes and 136 relationships
+2026-06-02 13:48:03,234 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_sync_ticket | ## Ticket actual
+Paso 2 del plan: Script de vectorización ONNX. Escribir scripts/download_model.py (baja all-MiniLM-L6-v2 en ONNX + su tokenizer si no están) y scripts/vectorize.py (carga catalog/*.md...
+2026-06-02 13:49:50,715 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 13:50:15,612 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 13:53:19,243 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 13:53:20,571 - cortex.semantic.vault_reader - INFO - Vault indexed: 10 documents
+2026-06-02 13:54:25,556 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 13:54:25,557 - cortex.mcp.server - INFO - TOOL_CALL: cortex_ping | args: {}
+2026-06-02 13:54:25,557 - cortex.mcp.server - INFO - TOOL_CALL: cortex_ping | args: {}
+2026-06-02 13:54:25,557 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_ping | {
+  "status": "degraded",
+  "version": "2.2",
+  "uptime_seconds": 4038.293,
+  "indices_loaded": true,
+  "models_loaded": [
+    "onnx-embeddings"
+  ],
+  "last_error_seen": {
+    "tool": "cortex_create_...
+2026-06-02 13:54:25,586 - cortex.session.service - WARNING - Opening session 2026-06-02_paso-2-script-de-vectorizacion-onnx-embeddingsjson in gitless mode (no git repository at C:\Parcial2Calidad-CICD). Documenter will reconstruct from checkpoints only.
+2026-06-02 13:54:25,595 - cortex.session.service - INFO - Opened session 2026-06-02_paso-2-script-de-vectorizacion-onnx-embeddingsjson in gitless mode
+2026-06-02 13:54:45,936 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 13:54:45,937 - cortex.mcp.server - INFO - TOOL_CALL: cortex_session_status | args: {}
+2026-06-02 13:54:45,989 - cortex.mcp.server - INFO - TOOL_CALL: cortex_session_status | args: {}
+2026-06-02 13:54:45,989 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_session_status | {"session_id": "2026-06-02_paso-2-script-de-vectorizacion-onnx-embeddingsjson", "spec_path": "C:\\Parcial2Calidad-CICD\\.cortex\\vault\\specs\\2026-06-02_paso-2-script-de-vectorizacion-onnx-embeddings...
+2026-06-02 13:58:30,446 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 13:58:30,447 - cortex.mcp.server - INFO - TOOL_CALL: cortex_session_status | args: {}
+2026-06-02 13:58:30,449 - cortex.mcp.server - INFO - TOOL_CALL: cortex_session_status | args: {}
+2026-06-02 13:58:30,449 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_session_status | {"session_id": "2026-06-02_paso-2-script-de-vectorizacion-onnx-embeddingsjson", "spec_path": "C:\\Parcial2Calidad-CICD\\.cortex\\vault\\specs\\2026-06-02_paso-2-script-de-vectorizacion-onnx-embeddings...
+2026-06-02 14:06:16,078 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 14:06:16,098 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_session_checkpoint | {"session_id": "2026-06-02_paso-2-script-de-vectorizacion-onnx-embeddingsjson", "checkpoint_count": 1, "last_checkpoint_at": "2026-06-02T17:06:16.083650+00:00"}...
+2026-06-02 14:10:51,573 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 14:10:51,574 - cortex.mcp.server - INFO - TOOL_CALL: cortex_ping | args: {}
+2026-06-02 14:10:51,575 - cortex.mcp.server - INFO - TOOL_CALL: cortex_ping | args: {}
+2026-06-02 14:10:51,575 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_ping | {
+  "status": "ok",
+  "version": "2.2",
+  "uptime_seconds": 5024.31,
+  "indices_loaded": true,
+  "models_loaded": [
+    "onnx-embeddings"
+  ],
+  "last_error_seen": null,
+  "recent_errors_count": 0,
+  ...
+2026-06-02 14:10:54,201 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 14:10:54,202 - cortex.mcp.server - INFO - TOOL_CALL: cortex_documenter_briefing | args: {}
+2026-06-02 14:10:54,240 - cortex.documenter.reconstruction - INFO - Session 2026-06-02_paso-2-script-de-vectorizacion-onnx-embeddingsjson: run_hooks=False; skipping verification hook execution.
+2026-06-02 14:10:54,241 - cortex.mcp.server - INFO - TOOL_CALL: cortex_documenter_briefing | args: {}
+2026-06-02 14:10:54,241 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_documenter_briefing | {"session_id": "2026-06-02_paso-2-script-de-vectorizacion-onnx-embeddingsjson", "spec": {"path": "C:/Parcial2Calidad-CICD/.cortex/vault/specs/2026-06-02_paso-2-script-de-vectorizacion-onnx-embeddingsj...
+2026-06-02 14:12:14,811 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 14:12:14,814 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_self_review_note | {"warnings": [], "passed": true}...
+2026-06-02 14:12:57,689 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 14:12:57,695 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_write_doc | {"path": "C:\\Parcial2Calidad-CICD\\.cortex\\vault\\sessions\\2026-06-02_paso-2-script-de-vectorizacion-onnx-embeddingsjson_paso-2-vectorizacion-onnx-catalogo-embeddingsjson.md", "doc_type": "session"...
+2026-06-02 14:13:05,989 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 14:13:05,990 - cortex.mcp.server - INFO - TOOL_CALL: cortex_close_session | args: {'status': 'closed', 'session_note_path': 'C:\\Parcial2Calidad-CICD\\.cortex\\vault\\sessions\\2026-06-02_paso-2-script-de-vectorizacion-onnx-embeddingsjson_paso-2-vectorizacion-onnx-catalogo-embeddingsjson.md', 'adrs_created': []}
+2026-06-02 14:13:06,006 - cortex.session.service - INFO - Closed session 2026-06-02_paso-2-script-de-vectorizacion-onnx-embeddingsjson as closed (mode=managed, end=00000000)
+2026-06-02 14:13:06,007 - cortex.mcp.server - INFO - TOOL_CALL: cortex_close_session | args: {'status': 'closed', 'session_note_path': 'C:\\Parcial2Calidad-CICD\\.cortex\\vault\\sessions\\2026-06-02_paso-2-script-de-vectorizacion-onnx-embeddingsjson_paso-2-vectorizacion-onnx-catalogo-embeddingsjson.md', 'adrs_created': []}
+2026-06-02 14:13:06,007 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_close_session | {"session_id": "2026-06-02_paso-2-script-de-vectorizacion-onnx-embeddingsjson", "final_status": "closed", "mode": "managed", "closed_at": "2026-06-02T17:13:05.997235+00:00", "end_commit": "00000000000...
+2026-06-02 14:21:21,476 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 14:21:21,477 - cortex.mcp.server - INFO - TOOL_CALL: cortex_ping | args: {}
+2026-06-02 14:21:21,477 - cortex.mcp.server - INFO - TOOL_CALL: cortex_ping | args: {}
+2026-06-02 14:21:21,477 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_ping | {
+  "status": "ok",
+  "version": "2.2",
+  "uptime_seconds": 5654.213,
+  "indices_loaded": true,
+  "models_loaded": [
+    "onnx-embeddings"
+  ],
+  "last_error_seen": null,
+  "recent_errors_count": 0,
+ ...
+2026-06-02 14:21:23,249 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 14:21:23,250 - cortex.mcp.server - INFO - TOOL_CALL: cortex_documenter_briefing | args: {}
+2026-06-02 14:21:23,250 - cortex.mcp.server - INFO - TOOL_CALL: cortex_documenter_briefing | args: {}
+2026-06-02 14:22:20,720 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 14:22:20,723 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_self_review_note | {"warnings": [], "passed": true}...
+2026-06-02 14:22:58,842 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 14:22:58,861 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_write_doc | {"path": "C:\\Parcial2Calidad-CICD\\.cortex\\vault\\handoffs\\2026-06-02_handoff-estado-tras-paso-2-reinicio-para-resolver-gitless-retomar-en-paso-3.md", "doc_type": "handoff"}...

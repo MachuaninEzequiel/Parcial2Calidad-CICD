@@ -1,0 +1,165 @@
+session_id: 2026-06-02_paso-3-frontend-estatico-site-carga-de-embeddingsjson-busqueda-por-similitud-coseno-y-ui-vectorizacion-en-browser-diferida-al-paso-4
+spec_path: C:\Parcial2Calidad-CICD\.cortex\vault\specs\2026-06-02_paso-3-frontend-estatico-site-carga-de-embeddingsjson-busqueda-por-similitud-coseno-y-ui-vectorizacion-en-browser-diferida-al-paso-4.md
+spec_summary: 'Construir la primera mitad del frontend (el README declara "frontend
+  Pasos 3-4"): un sitio 100% estático en site/ (HTML + CSS + JS vanilla, sin frameworks
+  ni bundlers) que carga dist/embeddings.json, renderiza el catálogo de 10 juegos
+  y hace búsqueda semántica por similitud coseno client-side. El paso query→vector
+  queda aislado tras un seam vectorizeQuery() respaldado por un stub demoable: modo
+  "buscá juegos similares" (item-to-item, usando los vectores ya precomputados del
+  embeddings.json) — una feature semántica completa y mostrable SIN tocar el modelo.
+  Las funciones puras (cosineSimilarity, topK) viven en un módulo ES sin dependencias
+  de DOM y se testean con el runner nativo node:test (cero npm). El onnxruntime-web
+  real en el browser + el tokenizer + la vectorización de texto libre + el test de
+  equivalencia Python↔JS (tolerancia 1e-5, riesgo #1 del ADR-001) se reservan para
+  el Paso 4: el seam vectorizeQuery() existe pero lanza un Error explícito "implementado
+  en el Paso 4". Español rioplatense, didáctico, pensado para la defensa oral de 5
+  min.'
+start_commit: '0000000000000000000000000000000000000000'
+start_branch: ''
+opened_at: '2026-06-02T17:40:22.657379Z'
+status: closed
+mode: managed
+checkpoints:
+- timestamp: '2026-06-02T17:49:02.466624Z'
+  source: cortex-code-implementer
+  verified_claims:
+  - 'site/js/search.mjs: NUEVO. cosineSimilarity (coseno verdadero con normas reales
+    + guarda norma 0 -> 0, sin NaN; documenta premisa L2 del Paso 2), topK (rankea
+    desc por coseno, no muta items, k>length devuelve todos), vectorizeQuery (seam
+    que lanza Error explicito ''Paso 4'').'
+  - 'site/js/app.mjs: NUEVO. fetch de ../dist/embeddings.json, render del catalogo
+    (cards con title/year/genres-chips/summary), boton ''Buscar similares'' (topK
+    k=6, excluye el propio juego por id, muestra top-5 con score a 3 decimales), caja
+    de texto libre disabled, manejo de error de carga claro y accionable. Generos
+    leidos del dato (Capa C), no hardcodeados.'
+  - 'site/index.html: NUEVO. HTML5 semantico lang=es, header con titulo y bajada,
+    caja de busqueda disabled marcada Paso 4, secciones catalogo+resultados, link
+    a css/styles.css y script type=module js/app.mjs, sin frameworks ni CDNs.'
+  - 'site/css/styles.css: NUEVO. Estilos propios responsive (grid de cards), chips
+    de generos, zona de resultados, estados loading/error, buen contraste para proyector.
+    Sin frameworks CSS.'
+  - 'site/js/search.test.mjs: NUEVO. node:test nativo. cosineSimilarity (identicos~1,
+    ortogonales 0, opuestos~-1, norma0->0 sin NaN, no-normalizados, distinta longitud
+    lanza), topK (k exacto, orden desc, k>length, no muta), vectorizeQuery lanza Paso4,
+    y test condicional del JSON real con new URL(''../../dist/embeddings.json'', import.meta.url).'
+  - 'scripts/check_site.py: NUEVO. Estilo validate_catalog.py (reconfig UTF-8 stdout/stderr,
+    mensajes OK/error, SystemExit). Verifica los 5 archivos del sitio, que index.html
+    referencia css/styles.css y js/app.mjs, y contrato de embeddings.json si existe
+    (model, dimensions==384, items no vacio, primer item vector 384). Avisa pero NO
+    falla si el JSON no esta.'
+  - 'PRESENTACION.md: EDITADO. Append del fragmento Paso 3 (~3 parrafos, voseo): similitud
+    coseno como cercania semantica, por que con L2 el coseno = producto punto, y por
+    que la vectorizacion real de la query se difiere al Paso 4 (mismo model.onnx en
+    el browser).'
+  - 'README.md: EDITADO. Seccion ''Estado actual'' actualizada a Pasos 1-3 (con bloque
+    Paso 3 y aclaracion de que texto libre llega en Paso 4), instrucciones de preview
+    local, y estructura del repo con site/ agregado. Roadmap mantenido.'
+  - 'HOOK 1 ''node --test site/js/search.test.mjs'' -> EXIT 0 (11/11 tests pass, 0
+    fail; el test condicional del JSON corrio NO skipped: dimensions=384, items=10,
+    auto-similitud ~1).'
+  - HOOK 2 'python scripts/check_site.py' -> EXIT 0 (5 archivos OK, ambas referencias
+    OK, embeddings.json model=all-MiniLM-L6-v2 dimensions=384 10 items vector 384).
+  - HOOK 3 'python scripts/validate_catalog.py' -> EXIT 0 (10/10 archivos validos;
+    Pasos 1-2 intactos).
+  - HOOK 4 'ruff check .' -> EXIT 0 (All checks passed, incluye check_site.py).
+  - git check-ignore confirma que dist/embeddings.json y models/model.onnx SIGUEN
+    gitignored; git status no muestra nada pesado nuevo (solo site/, scripts/check_site.py,
+    README.md, PRESENTACION.md); NO hay embeddings.json copiado dentro de site/.
+  unverified_claims:
+  - Demo en navegador real NO ejecutada (no levante python -m http.server ni abri
+    http://localhost:8000/site/). La logica de render y el wiring del fetch se validaron
+    por lectura/estructura, no por ejecucion en browser. El test condicional de node:test
+    SI valida que topK rankea bien sobre los vectores reales del embeddings.json,
+    asi que el motor de ranking esta verificado; lo no verificado es exclusivamente
+    el render del DOM y los eventos de click en un browser vivo.
+  - Accesibilidad/contraste pensados para proyector pero no medidos con herramienta
+    (juicio visual sobre el CSS, sin auditoria WCAG).
+  artifacts_touched:
+  - site/index.html
+  - site/css/styles.css
+  - site/js/search.mjs
+  - site/js/app.mjs
+  - site/js/search.test.mjs
+  - scripts/check_site.py
+  - PRESENTACION.md
+  - README.md
+  note: 'Paso 3 COMPLETO y TODO VERDE: los 4 hooks en exit 0 (incluido ruff opcional).
+    Para el documenter: cerrar como ''closed'' (no handoff) salvo que el usuario quiera
+    la demo en browser verificada antes. Decisiones clave a documentar: (1) RUTA embeddings.json
+    = ''../dist/embeddings.json'' (NO el default ''./embeddings.json'' que mencionaba
+    la spec). Razon: site/ NO esta gitignored; copiar el JSON adentro lo commitearia
+    por error. Por eso el sitio fetchea ../dist/ y el preview se sirve desde la raiz
+    del repo (python -m http.server 8000 -> http://localhost:8000/site/). El build
+    del Paso 6 ajustara esta ruta para produccion (deuda/seam conocido). Documentado
+    en comentario al tope de app.mjs. (2) cosineSimilarity calcula normas REALES (no
+    asume norma 1) para ser correcta con cualquier input, aunque para los vectores
+    L2-normalizados del Paso 2 se reduce a producto punto -> ese atajo lo explota
+    el Paso 4. (3) Seam vectorizeQuery() lanza Error ''Paso 4'' explicito (no resultados
+    vacios en silencio); caja de texto libre disabled con nota visible. (4) ''Buscar
+    similares'' pide k=6 y filtra el propio juego por id, mostrando top-5. (5) Generos
+    leidos del dato (Capa C SDD), no hardcodeados. NO toque models/, vectorize.py,
+    catalog_io.py, schema, ni .github/workflows ni Docker. Posible candidato a nota
+    (no ADR fuerte): la convencion de ruta relativa al dist/ es un trade-off que el
+    Paso 6 revisita."'
+- timestamp: '2026-06-02T17:50:48.350898Z'
+  source: cortex-SDDwork
+  verified_claims:
+  - 'Deep Track: delegé la construcción a cortex-code-implementer; su checkpoint pasó
+    cortex_review_checkpoint (action=accept, ambos gates).'
+  - 'Verificación INDEPENDIENTE del orquestador (re-corrí los 4 hooks yo mismo): `node
+    --test site/js/search.test.mjs` exit 0 (11/11 pass, el test condicional del JSON
+    real corrió — 0 skipped); `python scripts/check_site.py` exit 0; `python scripts/validate_catalog.py`
+    exit 0 (10/10, Pasos 1-2 intactos); `ruff check .` exit 0 (incl. check_site.py).'
+  - 'Leí search.mjs: cosineSimilarity correcto (dot/(||a||·||b||)) con guarda anti-NaN
+    para norma 0 y validación de longitudes; topK no muta el input y respeta k>length;
+    vectorizeQuery() es el seam que LANZA Error explícito del Paso 4 (no devuelve
+    vacío).'
+  - 'Leí app.mjs: ''buscar similares'' pide K_FETCH=6, filtra al propio juego por
+    id y muestra 5 (exclusión correcta); géneros leídos del dato (Capa C, sin enum
+    hardcodeado); render con textContent (sin riesgo XSS); error de carga claro y
+    accionable.'
+  - 'index.html: caja de búsqueda por texto libre PRESENTE pero disabled + aria-disabled,
+    placeholder/nota ''🔒 Disponible en el Paso 4''.'
+  - 'Entorno verificado: Node v22.19.0 (≥18), dist/embeddings.json existe con contrato
+    {model, dimensions:384, generated_at, items[10] con id/title/year/genres/summary/vector[384]}.'
+  - 'git check-ignore (reportado por el implementer): dist/embeddings.json y models/
+    siguen gitignored; NO se copió embeddings.json dentro de site/.'
+  unverified_claims:
+  - 'Demo en navegador VIVO no ejecutada: el render del DOM y los eventos de click
+    no se probaron en un browser real. El motor de ranking Sí quedó validado vía el
+    test condicional sobre los vectores reales (topK rankea bien, auto-similitud ≈1).
+    Pendiente: levantar `python -m http.server 8000` desde la raíz y abrir http://localhost:8000/site/.'
+  - 'Blocker gitless persiste: cortex_session_status muestra start_commit en ceros
+    y start_branch vacío — el documenter NO podrá reconstruir desde diff; depende
+    de estos checkpoints. (Hipótesis del handoff previo: el server cacheó ''sin git''
+    antes del git init.)'
+  artifacts_touched:
+  - site/index.html
+  - site/css/styles.css
+  - site/js/search.mjs
+  - site/js/app.mjs
+  - site/js/search.test.mjs
+  - scripts/check_site.py
+  - PRESENTACION.md
+  - README.md
+  note: 'documenter: Paso 3 COMPLETO y verificado de forma independiente, los 3 hooks
+    required + el optional en verde. Sugiero cerrar como ''closed'' (no handoff):
+    no quedó nada rojo ni fuera de scope. Decisiones a registrar: (1) ruta de embeddings
+    = ''../dist/embeddings.json'' (no ''./'') porque site/ NO está gitignored y copiar
+    el JSON adentro lo commitearía — desviación justificada del texto literal de la
+    spec, documentada en app.mjs; (2) Deep Track adaptado: NO hubo subagent explorer
+    ni designer separados — el designer no está registrado en este Claude Code y la
+    exploración (entorno + contrato de embeddings.json) la hizo el orquestador inline;
+    delegé solo a cortex-code-implementer. NO amerita ADR nuevo (todo dentro del ADR-001).
+    Posible término de glosario: ''Búsqueda por similares (item-to-item)''. Caveat
+    operativo: el blocker gitless sigue — verificar si conviene reiniciar el MCP server
+    para que tome el git del repo antes del Paso 4. Avanzar paso a paso: pausar y
+    esperar confirmación del usuario antes del Paso 4 (onnxruntime-web en browser
+    + test de equivalencia Python↔JS 1e-5, riesgo #1 del ADR-001).'
+verification_results: []
+tasks: []
+closed_at: '2026-06-02T18:07:18.191984Z'
+end_commit: '0000000000000000000000000000000000000000'
+documenter_decision: closed
+session_note_path: C:\Parcial2Calidad-CICD\.cortex\vault\sessions\2026-06-02_paso-3-frontend-estatico-site-carga-de-embeddingsjson-busqueda-por-similitud-coseno-y-ui-vectorizacion-en-browser-diferida-al-paso-4_paso-3-frontend-estatico-con-busqueda-por-similitud-coseno.md
+adrs_created: []

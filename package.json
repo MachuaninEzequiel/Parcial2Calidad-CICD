@@ -1,0 +1,14 @@
+{
+  "name": "buscador-semantico-videojuegos",
+  "version": "0.4.0",
+  "private": true,
+  "type": "module",
+  "description": "Buscador semántico de videojuegos: vectorización en el browser (Transformers.js) + búsqueda por significado. El SITIO no necesita npm install (usa el import map al CDN); esta dependencia es SOLO para el gate de equivalencia Python↔JS en Node/CI (Paso 4).",
+  "scripts": {
+    "test:equiv": "node --test tests/equivalence/embed.equiv.test.mjs",
+    "test:pure": "node --test site/js/search.test.mjs"
+  },
+  "devDependencies": {
+    "@huggingface/transformers": "4.2.0"
+  }
+}

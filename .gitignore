@@ -4,6 +4,13 @@ dist/
 # Modelo ONNX (~22 MB): se descarga en CI o build local (Paso 2). Fuera de git.
 models/*.onnx
 
+# Dependencias JS del gate de equivalencia (Paso 4). El SITIO no las necesita
+# (usa el import map al CDN); se instalan solo para `node --test` en Node/CI.
+node_modules/
+
+# Cache de modelos que Transformers.js baja en Node para el equivalence test.
+.cache/
+
 # Python
 __pycache__/
 *.py[cod]

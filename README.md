@@ -57,14 +57,19 @@ La pieza central: **el mismo `model.onnx` corre en dos lugares**. En el CI (con 
 
 ---
 
-## Estado actual — Paso 1 ✅
+## Estado actual — Pasos 1-4 ✅
 
-Ya está la **base SDD**: schema, expectativas, catálogo inicial (10 juegos) y el validador.
+- **Paso 1 ✅ · base SDD:** schema, expectativas, catálogo inicial (10 juegos) y el validador.
+- **Paso 2 ✅ · vectorización ONNX:** `scripts/vectorize.py` recorre el catálogo, lo pasa por **all-MiniLM-L6-v2** (ONNX), aplica mean pooling + normalización L2 y genera `dist/embeddings.json` (10 items, vectores de 384 dimensiones).
+- **Paso 3 ✅ · frontend estático + motor de ranking:** sitio en `site/` (HTML + CSS + JS vanilla, sin frameworks) que carga `embeddings.json`, lista los 10 juegos y permite **buscar juegos similares** por similitud coseno client-side. Las funciones puras (`cosineSimilarity`, `topK`) viven en `site/js/search.mjs` y se testean con el runner nativo `node:test`.
+- **Paso 4 ✅ · búsqueda por texto libre + equivalencia Python↔JS:** la caja de texto libre está **habilitada**. Al escribir una frase, el navegador la vectoriza con el **mismo `model.onnx`** del CI (vía **Transformers.js** = onnxruntime-web, que entra por un **import map → CDN**, sin npm install) y rankea el catálogo con la misma `topK`. La vectorización vive aislada en `site/js/vectorizer.mjs` para que `search.mjs` siga puro. Y el corazón del paso: un **test de equivalencia** (`tests/equivalence/embed.equiv.test.mjs`) prueba que el vector de JavaScript coincide con el de referencia de Python dentro de `1e-5` **y** que el ranking top-k es idéntico — la mitigación del riesgo #1 del ADR-001.
+
+> **Detalle clave de la equivalencia:** el catálogo (Paso 2) se vectoriza con el tokenizer pad-eando a 128 tokens; el navegador vectoriza la query **sin padding** (solo los tokens reales). Como el modelo es int8, el largo de secuencia afecta la cuantización, así que la referencia de Python (`scripts/emit_reference_vectors.py`) también vectoriza las queries **sin padding** para reproducir EXACTO lo que hace el browser. Con eso el diff cae de ~3e-2 a ~4e-8.
 
 ### Validar el catálogo localmente
 
 ```bash
-# Instalar dependencias mínimas (pyyaml + jsonschema)
+# Instalar dependencias mínimas (pyyaml + jsonschema + numpy + onnxruntime + ...)
 pip install -e .
 
 # Validar que TODOS los juegos cumplen el schema
@@ -76,9 +81,40 @@ python scripts/validate_catalog.py --expect-fail tests/fixtures/invalid-game.md
 
 El primer comando termina en verde (exit 0). El segundo **también** termina en verde, porque el archivo malo es rechazado tal como se espera.
 
+### Probar el frontend localmente (Pasos 3-4)
+
+```bash
+# 1. Generar los embeddings (si todavía no los tenés)
+python scripts/vectorize.py
+
+# 2. Verificar que el sitio está completo y coherente
+python scripts/check_site.py
+
+# 3. Correr los tests de las funciones puras (sin npm)
+node --test site/js/search.test.mjs
+
+# 4. Servir la RAÍZ del repo y abrir el sitio en el navegador
+python -m http.server 8000
+#    → abrir http://localhost:8000/site/
+```
+
+El sitio fetchea `../dist/embeddings.json`, así que hay que servir la **raíz del repo** (no `site/`). En cada card, "Buscar similares" devuelve el top-5 por coseno descendente. En la caja de arriba, escribí una frase (ej. *"juego para jugar con amigos en el sillón"*) y dale **Buscar**: la primera vez baja el modelo (~23 MB) desde el CDN y después es instantáneo. **El sitio NO necesita `npm install`** — Transformers.js entra por el import map al CDN.
+
+### Correr el gate de equivalencia Python↔JS (Paso 4)
+
+```bash
+# Esto SÍ necesita npm (solo para el test, no para el sitio):
+npm install                                   # instala @huggingface/transformers (devDep)
+python scripts/vectorize.py                   # catálogo vectorizado (con padding)
+python scripts/emit_reference_vectors.py      # vectores de referencia Python (sin padding)
+node --test tests/equivalence/embed.equiv.test.mjs   # diff < 1e-5 y ranking idéntico
+```
+
+`emit_reference_vectors.py` reusa el `embed()` de `vectorize.py` (DRY) y escribe `tests/fixtures/query-vectors.reference.json`. El test en Node vectoriza las mismas queries con Transformers.js y verifica equivalencia numérica + identidad de ranking.
+
 ---
 
-## Estructura del repo (hasta el Paso 1)
+## Estructura del repo (hasta el Paso 4)
 
 ```
 .
@@ -89,13 +125,33 @@ El primer comando termina en verde (exit 0). El segundo **también** termina en 
 ├── catalog/                      # un .md por juego (frontmatter + sinopsis)
 │   ├── hollow-knight.md
 │   └── ...                       # 10 juegos
+├── site/                         # frontend estático (Pasos 3-4)
+│   ├── index.html                # estructura + import map (Transformers.js → CDN)
+│   ├── css/
+│   │   └── styles.css            # estilos propios, sin frameworks
+│   └── js/
+│       ├── search.mjs            # funciones puras: cosineSimilarity, topK (sin npm)
+│       ├── vectorizer.mjs        # vectorización en el browser (Transformers.js) — Paso 4
+│       ├── app.mjs               # wiring de DOM: fetch, render, similares + texto libre
+│       └── search.test.mjs       # tests con el runner nativo node:test
 ├── scripts/
-│   └── validate_catalog.py       # valida cada .md contra el schema
+│   ├── catalog_io.py             # parsing compartido del catálogo (DRY)
+│   ├── validate_catalog.py       # valida cada .md contra el schema
+│   ├── vectorize.py              # genera dist/embeddings.json con ONNX (Paso 2)
+│   ├── emit_reference_vectors.py # vectores de referencia Python para la equivalencia (Paso 4)
+│   └── check_site.py             # chequeo estructural del sitio (Pasos 3-4)
 ├── tests/
+│   ├── equivalence/
+│   │   └── embed.equiv.test.mjs  # gate de equivalencia Python↔JS (Paso 4)
 │   └── fixtures/
-│       └── invalid-game.md       # .md malformado para el test negativo
+│       ├── invalid-game.md       # .md malformado para el test negativo
+│       └── query-vectors.reference.json  # referencia dorada (la genera emit_reference_vectors.py)
+├── dist/                         # output del build (gitignored) · embeddings.json
+├── models/                       # model.onnx + tokenizer (gitignored)
+├── node_modules/                 # devDep del equivalence test (gitignored)
+├── package.json                  # devDependency @huggingface/transformers + scripts de test
 ├── pyproject.toml                # dependencias + config de ruff
 └── README.md
 ```
 
-> **Próximos pasos:** vectorización con ONNX (Paso 2), frontend (Pasos 3-4), tests semánticos (Paso 5), GitHub Actions (Paso 6), Docker (Paso 7) y la presentación oral (Paso 8).
+> **Próximos pasos:** tests de regresión semántica autogenerados desde `search-expectations.yaml` (Paso 5), GitHub Actions con el deploy a Pages y el hosting del modelo en producción (Paso 6), Docker (Paso 7) y la presentación oral (Paso 8).

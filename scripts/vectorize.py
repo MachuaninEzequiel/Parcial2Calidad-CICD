@@ -88,15 +88,37 @@ def embed(text, session, tokenizer, input_names):
     return l2_normalize(pooled)
 
 
-def main():
+def load_model():
+    """Carga el modelo ONNX + tokenizer y devuelve lo que embed() necesita.
+
+    Helper DRY (Paso 4): tanto vectorize.main() como emit_reference_vectors.py
+    arrancan la MISMA sesión/tokenizer así el embedding del catálogo y el de las
+    queries de referencia salen del idéntico pipeline. No cambia nada del Paso 2.
+
+    Returns:
+        (session, tokenizer, input_names) listos para pasar a embed().
+
+    Raises:
+        FileNotFoundError: si falta el modelo o el tokenizer.
+    """
     if not MODEL_PATH.exists() or not TOKENIZER_PATH.exists():
-        print("✗ Falta el modelo o el tokenizer. Corré: python scripts/download_model.py")
-        return 1
+        raise FileNotFoundError(
+            "Falta el modelo o el tokenizer. Corré: python scripts/download_model.py"
+        )
 
     session = ort.InferenceSession(str(MODEL_PATH), providers=["CPUExecutionProvider"])
     input_names = {i.name for i in session.get_inputs()}
     tokenizer = Tokenizer.from_file(str(TOKENIZER_PATH))
     tokenizer.enable_truncation(max_length=MAX_LENGTH)
+    return session, tokenizer, input_names
+
+
+def main():
+    try:
+        session, tokenizer, input_names = load_model()
+    except FileNotFoundError as exc:
+        print(f"✗ {exc}")
+        return 1
 
     items = []
     for md_path in sorted(CATALOG_DIR.glob("*.md")):
