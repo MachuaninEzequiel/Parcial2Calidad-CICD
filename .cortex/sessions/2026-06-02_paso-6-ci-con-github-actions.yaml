@@ -1,0 +1,77 @@
+session_id: 2026-06-02_paso-6-ci-con-github-actions
+spec_path: C:\Parcial2Calidad-CICD\.cortex\vault\specs\2026-06-02_paso-6-ci-con-github-actions.md
+spec_summary: 'Cablear Integración Continua con GitHub Actions: un workflow .github/workflows/ci.yml
+  que, en cada push y pull_request, corra en el servidor los MISMOS gates que ya corremos
+  localmente — ruff, validación del catálogo contra el schema, vectorización ONNX
+  (baja el modelo + genera dist/embeddings.json), pytest (regresión semántica del
+  Paso 5 + units del Paso 2), check_site, y los tests JS (search.mjs puro + el gate
+  de equivalencia Python↔JS del Paso 4, riesgo #1 del ADR-001). El principio que demuestra:
+  lo que valida tu máquina es exactamente lo que valida el CI. SOLO CI: el CD (deploy
+  a GitHub Pages) y el hosting del modelo en producción quedan EXPLÍCITAMENTE diferidos
+  al final del proyecto (decisión del usuario), y Docker es el Paso 7. Reusa los scripts/comandos
+  tal cual (no reimplementa lógica en el YAML). Docs: badge de CI + ''Estado 1-6''.
+  Español rioplatense, didáctico, para la defensa oral.'
+start_commit: '0000000000000000000000000000000000000000'
+start_branch: ''
+opened_at: '2026-06-02T20:53:40.517353Z'
+status: closed
+mode: managed
+checkpoints:
+- timestamp: '2026-06-02T21:06:57.938556Z'
+  source: cortex-SDDwork
+  verified_claims:
+  - 'Fast Track. Creé .github/workflows/ci.yml: workflow ''CI'', on:[push,pull_request],
+    UN job `ci` en ubuntu-latest, con concurrency (cancel-in-progress) y permissions
+    contents:read. Pasos en orden de dependencias: checkout@v4 → setup-python@v5 (3.13,
+    cache pip) → setup-node@v4 (22, cache npm) → pip install -e .[dev] → npm ci →
+    cache@v4 de ~/.cache/huggingface + .cache → download_model.py → ruff → validate_catalog.py
+    → validate_catalog --expect-fail (test negativo) → vectorize.py → pytest tests/
+    -q → check_site.py → node search.test.mjs → node equivalence. Actions pineadas
+    a major. SIN job deploy, SIN GitHub Pages (CI-only).'
+  - 'Re-verifiqué yo mismo que el pipeline que codifica el YAML pasa LOCALMENTE (exit
+    0 en los 8): ci-yaml-valid (YAML válido, job ''ci'' presente, ''deploy'' ausente)
+    = OK; ruff = 0; validate_catalog = 0; validate_catalog --expect-fail = 0 (rechaza
+    el .md malformado como se espera); pytest tests/ = 10 passed; check_site = 0;
+    node search.test.mjs = 10 pass; node equivalence = 7 pass, max|diff| 4.47e-8 <
+    1e-5.'
+  - 'Docs alineadas: README — badge de CI (placeholder OWNER/REPO con comentario para
+    reemplazar), tabla de mapeo marca ''GitHub Actions ✅'' y aclara CD/Docker diferidos,
+    ''Estado actual'' → Pasos 1-6 con bullet del Paso 6, nueva subsección ''Integración
+    Continua — GitHub Actions (Paso 6)'' con los 7 gates, estructura del repo actualizada
+    con .github/workflows/ci.yml, ''Próximos pasos'' reescrito (Docker=Paso 7, CD
+    al final). PRESENTACION — fragmento del Paso 6 (~3 párrafos, voseo) appendeado
+    tras el del Paso 5.'
+  unverified_claims:
+  - 'Un workflow de GitHub Actions NO se puede ''correr'' localmente: probé que los
+    COMANDOS que ejecuta pasan en este entorno, pero la semántica del runner (setup-python/node,
+    cache@v4, npm ci en runner limpio, resolución de ~/.cache/huggingface) sólo se
+    valida de verdad al pushear a GitHub. Hoy el repo es gitless / sin remoto.'
+  - El badge del README apunta a OWNER/REPO (placeholder); hay que reemplazarlo por
+    el path real del repo cuando se publique en GitHub.
+  - El gate de equivalencia en CI baja ~23MB del HF Hub (Python via download_model.py
+    + Node via Transformers.js); local corrió cacheado. En un runner limpio sin red
+    al Hub fallaría (dependencia conocida, mitigada con cache@v4).
+  - Para que el CI tenga sentido en GitHub hay que commitear primero Pasos 4-6 (hoy
+    declared-only/gitless), incluida la fixture golden tests/fixtures/query-vectors.reference.json
+    consistente con el catálogo.
+  artifacts_touched:
+  - .github/workflows/ci.yml
+  - README.md
+  - PRESENTACION.md
+  note: 'documenter: Paso 6 COMPLETO (Fast Track), SOLO CI por decisión explícita
+    del usuario (el CD/GitHub Pages + hosting del modelo en prod se difieren al final).
+    Los 7 hooks + ci-yaml-valid + el test negativo pasan localmente (re-verificados)
+    → cerrable como ''closed''. NO amerita ADR nuevo: un workflow de CI estándar;
+    la elección CI-only (diferir CD) es temporal y quedó como constraint de la spec.
+    Decisión de diseño menor que vale mencionar inline en la session note: el workflow
+    REUSA los scripts tal cual (no reimplementa lógica) y el orden de pasos refleja
+    dependencias reales (download_model → vectorize → pytest/equivalence). PENDIENTE
+    OPERATIVO: commitear Pasos 4-6 (gitless) y reemplazar OWNER/REPO en el badge.
+    PRÓXIMO: Paso 7 (Docker) tras confirmación del usuario; y al final, el CD a Pages."'
+verification_results: []
+tasks: []
+closed_at: '2026-06-02T21:09:59.422431Z'
+end_commit: '0000000000000000000000000000000000000000'
+documenter_decision: closed
+session_note_path: C:\Parcial2Calidad-CICD\.cortex\vault\sessions\2026-06-02_paso-6-ci-con-github-actions_cierre-paso-6-ci-con-github-actions.md
+adrs_created: []

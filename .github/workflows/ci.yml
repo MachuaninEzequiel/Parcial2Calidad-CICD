@@ -1,0 +1,83 @@
+name: CI
+
+# Integración Continua: en cada push y cada Pull Request corremos en el servidor
+# los MISMOS gates que el dev corre localmente. Lo que valida tu máquina es
+# exactamente lo que valida GitHub Actions.
+#
+# Esto es SOLO CI: el deploy continuo (CD) a GitHub Pages y el hosting del modelo
+# en producción se resuelven al final del proyecto. Docker es el Paso 7.
+on:
+  push:
+  pull_request:
+
+# Si llega un push nuevo al mismo ref mientras corre uno viejo, cancelamos el
+# viejo: no tiene sentido gastar minutos en un commit que ya quedó atrás.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+# El workflow solo lee el repo (no despliega nada): permisos mínimos.
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Instalar dependencias Python (runtime + dev)
+        run: pip install -e ".[dev]"
+
+      - name: Instalar dependencias JS (solo para el gate de equivalencia)
+        run: npm ci
+
+      # El modelo ONNX (~23 MB) se baja una vez y se cachea entre runs. Cubrimos
+      # el cache de huggingface_hub (Python) y el de Transformers.js (Node, .cache/).
+      - name: Cache del modelo (HuggingFace / Transformers.js)
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/huggingface
+            .cache
+          key: hf-${{ runner.os }}-${{ hashFiles('scripts/download_model.py') }}
+
+      - name: Bajar modelo + tokenizer
+        run: python scripts/download_model.py
+
+      - name: Lint (ruff)
+        run: ruff check .
+
+      - name: Validar catálogo contra el schema (SDD Capa A)
+        run: python scripts/validate_catalog.py
+
+      - name: Test negativo del validador (un .md malformado debe ser rechazado)
+        run: python scripts/validate_catalog.py --expect-fail tests/fixtures/invalid-game.md
+
+      - name: Vectorizar catálogo (genera dist/embeddings.json)
+        run: python scripts/vectorize.py
+
+      - name: Tests Python (units del Paso 2 + regresión semántica del Paso 5)
+        run: python -m pytest tests/ -q
+
+      - name: Chequeo estructural del sitio
+        run: python scripts/check_site.py
+
+      - name: Tests JS puros (search.mjs, sin dependencias)
+        run: node --test site/js/search.test.mjs
+
+      - name: Gate de equivalencia Python<->JS (riesgo #1 del ADR-001)
+        run: node --test tests/equivalence/embed.equiv.test.mjs

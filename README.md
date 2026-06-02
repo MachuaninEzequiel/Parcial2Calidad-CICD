@@ -1,5 +1,8 @@
 # 🎮 Buscador Semántico de Videojuegos
 
+<!-- Reemplazá OWNER/REPO por el path real del repo en GitHub cuando lo publiques. -->
+[![CI](https://github.com/OWNER/REPO/actions/workflows/ci.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/ci.yml)
+
 > Catálogo de videojuegos en Markdown que se vectoriza con un modelo de IA dentro del pipeline de CI y se busca por **significado** —no por palabras clave— 100% en el navegador.
 
 Escribís *"juego para jugar con amigos en el sillón"* y te devuelve **Overcooked 2**, aunque esa frase no aparezca escrita en ningún lado. Eso son **embeddings**: representar texto como vectores numéricos y comparar por cercanía semántica.
@@ -37,10 +40,10 @@ La pieza central: **el mismo `model.onnx` corre en dos lugares**. En el CI (con 
 | Bloque del esquema teórico | Implementación concreta |
 |---|---|
 | Control de versiones | GitHub (`main` + feature branches + PRs) |
-| Servidor de Integración Continua | GitHub Actions |
-| Entorno del dev con build local | Docker + script de vectorización local |
-| Prueba automatizada | pytest (unitarios) + tests semánticos desde la spec |
-| Build que despliega | Job de deploy en Actions → GitHub Pages |
+| Servidor de Integración Continua | GitHub Actions ✅ — `.github/workflows/ci.yml` (Paso 6) |
+| Entorno del dev con build local | Docker + script de vectorización local *(Docker: Paso 7)* |
+| Prueba automatizada | pytest (unitarios + regresión semántica) + gate de equivalencia ✅ |
+| Build que despliega | Job de deploy en Actions → GitHub Pages *(CD: al final del proyecto)* |
 | Entornos de entrega | GitHub Pages (producción) |
 | Mecanismo de feedback | Status checks en PRs + badges + notificaciones de GitHub |
 
@@ -57,7 +60,7 @@ La pieza central: **el mismo `model.onnx` corre en dos lugares**. En el CI (con 
 
 ---
 
-## Estado actual — Pasos 1-5 ✅
+## Estado actual — Pasos 1-6 ✅
 
 - **Paso 1 ✅ · base SDD:** schema, expectativas, catálogo inicial (10 juegos) y el validador.
 - **Paso 2 ✅ · vectorización ONNX:** `scripts/vectorize.py` recorre el catálogo, lo pasa por **all-MiniLM-L6-v2** (ONNX), aplica mean pooling + normalización L2 y genera `dist/embeddings.json` (10 items, vectores de 384 dimensiones).
@@ -65,6 +68,8 @@ La pieza central: **el mismo `model.onnx` corre en dos lugares**. En el CI (con 
 - **Paso 4 ✅ · búsqueda por texto libre + equivalencia Python↔JS:** la caja de texto libre está **habilitada**. Al escribir una frase, el navegador la vectoriza con el **mismo `model.onnx`** del CI (vía **Transformers.js** = onnxruntime-web, que entra por un **import map → CDN**, sin npm install) y rankea el catálogo con la misma `topK`. La vectorización vive aislada en `site/js/vectorizer.mjs` para que `search.mjs` siga puro. Y el corazón del paso: un **test de equivalencia** (`tests/equivalence/embed.equiv.test.mjs`) prueba que el vector de JavaScript coincide con el de referencia de Python dentro de `1e-5` **y** que el ranking top-k es idéntico — la mitigación del riesgo #1 del ADR-001.
 
 - **Paso 5 ✅ · regresión semántica + catálogo afinado:** el loop SDD se cierra. `tests/test_search_regression.py` lee `specs/search-expectations.yaml` **en runtime** y genera un test parametrizado por expectativa (Capa B → tests): vectoriza cada query reusando el `embed()` de `vectorize.py` **sin padding** (régimen browser, ADR-002), rankea contra `dist/embeddings.json` por coseno y exige que `must_include_any_of` caiga en el top-k. Para que el ranking sea bueno con el modelo chico de inglés, se afinó el **contenido del catálogo en español** (ADR-003) en vez de cambiar de modelo: ahora *"juego para jugar con amigos en el sillón"* devuelve **Overcooked 2 en el puesto #1** y *"souls-like para principiantes"* devuelve **Hollow Knight en el #1**, ambas reales. La demo de la línea 5 ya no es aspiracional. En el CI (Paso 6), estos tests corren como gate junto al resto.
+
+- **Paso 6 ✅ · Integración Continua (GitHub Actions):** `.github/workflows/ci.yml` corre en **cada push y cada PR** los MISMOS gates que probás localmente (ver más abajo). Es **solo CI**: la Entrega Continua (deploy a GitHub Pages) y el hosting del modelo en producción quedan para el final del proyecto; Docker es el Paso 7.
 
 > **Detalle clave de la equivalencia:** el catálogo (Paso 2) se vectoriza con el tokenizer pad-eando a 128 tokens; el navegador vectoriza la query **sin padding** (solo los tokens reales). Como el modelo es int8, el largo de secuencia afecta la cuantización, así que la referencia de Python (`scripts/emit_reference_vectors.py`) también vectoriza las queries **sin padding** para reproducir EXACTO lo que hace el browser. Con eso el diff cae de ~3e-2 a ~4e-8. El test de regresión del Paso 5 vectoriza la query con el MISMO régimen sin padding, así el ranking del gate coincide con el del navegador.
 
@@ -114,12 +119,29 @@ node --test tests/equivalence/embed.equiv.test.mjs   # diff < 1e-5 y ranking id�
 
 `emit_reference_vectors.py` reusa el `embed()` de `vectorize.py` (DRY) y escribe `tests/fixtures/query-vectors.reference.json`. El test en Node vectoriza las mismas queries con Transformers.js y verifica equivalencia numérica + identidad de ranking.
 
+### Integración Continua — GitHub Actions (Paso 6)
+
+`.github/workflows/ci.yml` corre en **cada push y cada PR** los MISMOS gates que probás localmente, en orden de dependencias:
+
+1. `ruff check .` — lint del código Python.
+2. `python scripts/validate_catalog.py` (+ el test negativo) — el catálogo cumple el schema (Capa A).
+3. `python scripts/vectorize.py` — regenera `dist/embeddings.json` con el modelo ONNX.
+4. `python -m pytest tests/` — unitarios (Paso 2) + **regresión semántica** (Paso 5).
+5. `python scripts/check_site.py` — estructura del sitio.
+6. `node --test site/js/search.test.mjs` — funciones puras (sin npm).
+7. `node --test tests/equivalence/embed.equiv.test.mjs` — **equivalencia Python↔JS** (riesgo #1 del ADR-001).
+
+El modelo (~23 MB) se baja una vez y se **cachea** entre runs. El principio: *lo que valida tu máquina es exactamente lo que valida el servidor*. **Es solo CI** — el **deploy continuo (CD)** a GitHub Pages y el hosting del modelo en producción se resuelven al final del proyecto; **Docker** es el Paso 7. El badge de arriba refleja el último run (reemplazá `OWNER/REPO` por el path real al publicar).
+
 ---
 
-## Estructura del repo (hasta el Paso 5)
+## Estructura del repo (hasta el Paso 6)
 
 ```
 .
+├── .github/
+│   └── workflows/
+│       └── ci.yml                # Integración Continua (Paso 6): corre todos los gates
 ├── schemas/
 │   └── game.schema.yaml          # SDD Capa A · fuente de verdad estructural
 ├── specs/
@@ -158,4 +180,4 @@ node --test tests/equivalence/embed.equiv.test.mjs   # diff < 1e-5 y ranking id�
 └── README.md
 ```
 
-> **Próximos pasos:** GitHub Actions con el deploy a Pages y el hosting del modelo en producción (Paso 6), Docker (Paso 7) y la presentación oral (Paso 8).
+> **Próximos pasos:** **Docker** (Paso 7) y la **presentación oral** (Paso 8). El **deploy continuo (CD) a GitHub Pages** y el hosting del modelo en producción se dejan para el cierre del proyecto. El Paso 6 ya dejó andando la **Integración Continua** (`.github/workflows/ci.yml`).
