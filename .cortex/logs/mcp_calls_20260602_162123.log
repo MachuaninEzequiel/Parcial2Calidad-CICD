@@ -130,3 +130,235 @@ FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Parcial2Calidad-CIC
 2026-06-02 17:11:29,280 - cortex.session.service - INFO - Closed session 2026-06-02_paso-4-vectorizacion-de-la-query-en-el-navegador-onnxruntime-web-via-transformersjs-busqueda-por-texto-libre-equivalencia-pythonjs as closed (mode=observed, end=00000000)
 2026-06-02 17:11:29,280 - cortex.mcp.server - INFO - TOOL_CALL: cortex_close_session | args: {'status': 'closed', 'session_note_path': 'C:\\Parcial2Calidad-CICD\\.cortex\\vault\\sessions\\2026-06-02_paso-4-vectorizacion-de-la-query-en-el-navegador-onnxruntime-web-via-transformersjs-busqueda-por-texto-libre-equivalencia-pythonjs_cierre-paso-4-equivalencia.md', 'adrs_created': ['C:\\Parcial2Calidad-CICD\\.cortex\\vault\\decisions\\ADR-002-equivalencia-python-js-query-sin-padding.md', 'C:\\Parcial2Calidad-CICD\\.cortex\\vault\\decisions\\ADR-003-modelo-ingles-vs-queries-en-espanol.md']}
 2026-06-02 17:11:29,280 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_close_session | {"session_id": "2026-06-02_paso-4-vectorizacion-de-la-query-en-el-navegador-onnxruntime-web-via-transformersjs-busqueda-por-texto-libre-equivalencia-pythonjs", "final_status": "closed", "mode": "obser...
+2026-06-02 17:14:08,502 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 17:14:08,519 - cortex.embedders.onnx - INFO - Loading ONNX embedding function (ONNXMiniLM_L6_V2)...
+2026-06-02 17:14:13,989 - cortex.semantic.vault_reader - INFO - Vault indexed: 20 documents
+2026-06-02 17:14:14,726 - cortex.context_enricher.co_occurrence - INFO - Built graph with 33 nodes and 276 relationships
+2026-06-02 17:14:14,753 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_sync_ticket | ## Ticket actual
+Próxima spec (Paso 5): afinar los summaries del catálogo en español para que las queries de búsqueda por texto libre devuelvan resultados semánticamente correctos con el modelo chico ...
+2026-06-02 17:16:41,831 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 17:16:56,862 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 17:20:21,908 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 17:20:27,343 - cortex.semantic.vault_reader - INFO - Vault indexed: 21 documents
+2026-06-02 17:21:36,139 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 17:21:36,139 - cortex.mcp.server - INFO - TOOL_CALL: cortex_session_status | args: {}
+2026-06-02 17:21:36,142 - cortex.mcp.server - INFO - TOOL_CALL: cortex_session_status | args: {}
+2026-06-02 17:21:36,164 - cortex.session.service - WARNING - Opening session 2026-06-02_paso-5-tests-de-regresion-semantica-afinado-del-catalogo in gitless mode (no git repository at C:\Parcial2Calidad-CICD). Documenter will reconstruct from checkpoints only.
+2026-06-02 17:21:36,172 - cortex.session.service - INFO - Opened session 2026-06-02_paso-5-tests-de-regresion-semantica-afinado-del-catalogo in gitless mode
+2026-06-02 17:22:25,206 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 17:22:25,207 - cortex.mcp.server - INFO - TOOL_CALL: cortex_session_list | args: {'status': 'open'}
+2026-06-02 17:22:25,277 - cortex.mcp.server - INFO - TOOL_CALL: cortex_session_list | args: {'status': 'open'}
+2026-06-02 17:22:25,277 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_session_list | [{"session_id": "2026-06-02_paso-5-tests-de-regresion-semantica-afinado-del-catalogo", "status": "open", "mode": "unknown", "opened_at": "2026-06-02T20:21:36.164474+00:00", "closed_at": null, "checkpo...
+2026-06-02 17:22:48,642 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 17:22:48,643 - cortex.mcp.server - INFO - TOOL_CALL: cortex_session_status | args: {}
+2026-06-02 17:22:48,661 - cortex.mcp.server - INFO - TOOL_CALL: cortex_session_status | args: {}
+2026-06-02 17:22:48,661 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_session_status | {"session_id": "2026-06-02_paso-5-tests-de-regresion-semantica-afinado-del-catalogo", "spec_path": "C:\\Parcial2Calidad-CICD\\.cortex\\vault\\specs\\2026-06-02_paso-5-tests-de-regresion-semantica-afin...
+2026-06-02 17:25:21,751 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 17:25:21,753 - cortex.mcp.server - INFO - TOOL_CALL: cortex_ping | args: {}
+2026-06-02 17:25:21,754 - cortex.mcp.server - INFO - TOOL_CALL: cortex_ping | args: {}
+2026-06-02 17:25:21,754 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_ping | {
+  "status": "degraded",
+  "version": "2.2",
+  "uptime_seconds": 3838.579,
+  "indices_loaded": true,
+  "models_loaded": [
+    "onnx-embeddings"
+  ],
+  "last_error_seen": {
+    "tool": "cortex_create_...
+2026-06-02 17:25:26,472 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 17:25:26,473 - cortex.mcp.server - INFO - TOOL_CALL: cortex_session_status | args: {'session_id': '2026-06-02_paso-5-tests-de-regresion-semantica-afinado-del-catalogo'}
+2026-06-02 17:25:26,476 - cortex.mcp.server - INFO - TOOL_CALL: cortex_session_status | args: {'session_id': '2026-06-02_paso-5-tests-de-regresion-semantica-afinado-del-catalogo'}
+2026-06-02 17:25:26,476 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_session_status | {"session_id": "2026-06-02_paso-5-tests-de-regresion-semantica-afinado-del-catalogo", "spec_path": "C:\\Parcial2Calidad-CICD\\.cortex\\vault\\specs\\2026-06-02_paso-5-tests-de-regresion-semantica-afin...
+2026-06-02 17:31:48,313 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 17:31:48,317 - cortex.mcp.server - INFO - TOOL_CALL: cortex_session_checkpoint | args: {'session_id': '2026-06-02_paso-5-tests-de-regresion-semantica-afinado-del-catalogo', 'source': 'cortex-code-implementer', 'verified_claims': ['Hook semantic-regression (python -m pytest tests/ -q): exit 0, 10 passed (3 units Paso 2 + 5 expectativas parametrizadas desde search-expectations.yaml + 1 estructura embeddings + 1 regla YAML). El test NUEVO tests/test_search_regression.py lee el YAML en runtime, reusa embed()/load_model() de vectorize.py con tokenizer.no_padding() (ADR-002) y rankea por coseno contra dist/embeddings.json.', 'Hook equivalence-still-green (node --test tests/equivalence/embed.equiv.test.mjs): exit 0, 7 pass / 0 fail, peor max|diff| = 4.470e-8 << 1e-5; ranking top-k JS identico al Python de referencia tras re-emitir el fixture con el catalogo nuevo.', 'Hook js-pure-functions (node --test site/js/search.test.mjs): exit 0, 10 pass / 0 fail. search.mjs sigue puro, no se toco.', 'Hook catalog-still-green (python scripts/validate_catalog.py): exit 0, 10/10 archivos validos. Summaries editados: overcooked-2 = 850 chars, hollow-knight = 991 chars (ambos dentro de 80-1000), generos reales intactos.', 'Hook site-structure (python scripts/check_site.py): exit 0, sitio coherente, embeddings.json dimensions=384, 10 items.', 'Hook ruff-lint (opcional, ruff check .): exit 0, All checks passed (incluye el test nuevo).', "TOP-5 FINAL de las 5 queries (query sin padding vs catalogo re-vectorizado): 'souls-like para principiantes' -> [hollow-knight, hades, gris, celeste, disco-elysium] (hollow-knight #1, ANTES FALTABA); 'juego para jugar con amigos en el sillon' -> [overcooked-2, gris, journey, disco-elysium, celeste] (overcooked-2 #1, ANTES FALTABA); 'indie corto y emotivo con historia' -> gris #1 (OK); 'rpg con elecciones que importan' -> disco-elysium #1, witcher-3 #2 (OK); 'plataformas con dificultad muy alta' -> celeste presente #4 (OK via celeste). Las 5 expectativas pasan.", 'Re-vectorizacion (python scripts/vectorize.py): exit 0, 10 juegos x 384 dims regenerados en dist/embeddings.json. Re-emision (python scripts/emit_reference_vectors.py): exit 0, 6 queries de referencia re-escritas en tests/fixtures/query-vectors.reference.json (cambiaron los top_k_ids, no los vectores de las queries).', 'Baseline RED confirmado ANTES de editar: corriendo test_search_regression.py contra el catalogo viejo fallaban EXACTAMENTE las 2 esperadas (souls-like->hollow-knight y sillon->overcooked-2), 4 passed. El test efectivamente detecta la regresion, no es falso verde.', 'specs/search-expectations.yaml NO se modifico (git status confirma: no aparece en el diff). No se debilito ninguna expectativa. El test de regla del YAML pasa: cada id de must_include_any_of existe como catalog/<id>.md.', 'Solo se tocaron files_in_scope: tests/test_search_regression.py (nuevo), catalog/overcooked-2.md, catalog/hollow-knight.md, README.md, PRESENTACION.md (modificados), tests/fixtures/query-vectors.reference.json y dist/embeddings.json (regenerados). git status confirma que dist/, models/ y node_modules/ siguen gitignored (nada pesado staged).'], 'unverified_claims': ['La calidad semantica de OTRAS queries en espanol (fuera de las 5 de la spec) no se midio; ADR-003 ya aceptó que pueden seguir flojas (alcance academico). El afinado solo garantiza las expectativas declaradas.', 'El equivalence test corrio con el modelo CACHEADO localmente; la dependencia de red del HF Hub (primera bajada del modelo ~23MB) no se ejercito en esta corrida, es dependencia conocida del Paso 4.', 'El test de regresion hace pytest.skip con razon accionable si falta models/ o dist/embeddings.json; el path de skip se razono pero no se forzó en esta corrida (ambos artefactos estaban presentes). El path feliz si se ejercito.', "hollow-knight tambien es esperado en 'plataformas con dificultad muy alta' pero ESA expectativa pasa via celeste (#4), no via hollow-knight (que no entro al top-5 de esa query). La expectativa es inclusion-only asi que pasa, pero el refuerzo souls-like de hollow-knight no lo subio a esa query puntual."], 'artifacts_touched': ['tests/test_search_regression.py', 'catalog/overcooked-2.md', 'catalog/hollow-knight.md', 'dist/embeddings.json', 'tests/fixtures/query-vectors.reference.json', 'README.md', 'PRESENTACION.md'], 'note': 'documenter: Paso 5 COMPLETO y VERDE, los 6 hooks en exit 0 (5 required + 1 optional). Se puede cerrar como \'closed\' (no handoff). Resumen del approach: red de regresion semantica (Capa B->tests) + afinado de catalogo en espanol siguiendo ADR-002 (query sin padding) y ADR-003 (afinar contenido, no cambiar modelo). NO se creo ningun ADR nuevo: las decisiones de arquitectura (modelo fijo, query sin padding) ya estan en ADR-001/002/003; el Paso 5 es la IMPLEMENTACION de lo que ADR-003 difirio, no una decision nueva irreversible. Detalle editorial: tests/test_search_regression.py NO duplica pooling/L2 (reusa embed/load_model de vectorize.py, DRY) y usa una fixture de modulo para cargar el modelo una sola vez. Edge honesto a documentar: la query \'plataformas con dificultad muy alta\' pasa SOLO via celeste, hollow-knight NO entra al top-5 ahi pese al refuerzo souls-like (la expectativa es inclusion-only con [celeste, hollow-knight], asi que pasa). Si en el futuro se quita celeste de esa expectativa, romperia. README linea 5 (headline sillon->Overcooked2) ahora es REAL y verificado. PRESENTACION: se reviso el fragmento Paso 4 para que no sobrevenda (aclara que la equivalencia prueba IGUALDAD no CALIDAD, y que la demo en espanol se difirio a Paso 5) y se appendeo el fragmento Paso 5 (3 parrafos). Proximo paso natural: Paso 6 (GitHub Actions CI/CD), pero la spec pide PAUSAR y esperar confirmacion del usuario antes de arrancarlo. NO se commiteó nada (el usuario controla los commits)."'}
+2026-06-02 17:31:48,335 - cortex.mcp.server - INFO - TOOL_CALL: cortex_session_checkpoint | args: {'session_id': '2026-06-02_paso-5-tests-de-regresion-semantica-afinado-del-catalogo', 'source': 'cortex-code-implementer', 'verified_claims': ['Hook semantic-regression (python -m pytest tests/ -q): exit 0, 10 passed (3 units Paso 2 + 5 expectativas parametrizadas desde search-expectations.yaml + 1 estructura embeddings + 1 regla YAML). El test NUEVO tests/test_search_regression.py lee el YAML en runtime, reusa embed()/load_model() de vectorize.py con tokenizer.no_padding() (ADR-002) y rankea por coseno contra dist/embeddings.json.', 'Hook equivalence-still-green (node --test tests/equivalence/embed.equiv.test.mjs): exit 0, 7 pass / 0 fail, peor max|diff| = 4.470e-8 << 1e-5; ranking top-k JS identico al Python de referencia tras re-emitir el fixture con el catalogo nuevo.', 'Hook js-pure-functions (node --test site/js/search.test.mjs): exit 0, 10 pass / 0 fail. search.mjs sigue puro, no se toco.', 'Hook catalog-still-green (python scripts/validate_catalog.py): exit 0, 10/10 archivos validos. Summaries editados: overcooked-2 = 850 chars, hollow-knight = 991 chars (ambos dentro de 80-1000), generos reales intactos.', 'Hook site-structure (python scripts/check_site.py): exit 0, sitio coherente, embeddings.json dimensions=384, 10 items.', 'Hook ruff-lint (opcional, ruff check .): exit 0, All checks passed (incluye el test nuevo).', "TOP-5 FINAL de las 5 queries (query sin padding vs catalogo re-vectorizado): 'souls-like para principiantes' -> [hollow-knight, hades, gris, celeste, disco-elysium] (hollow-knight #1, ANTES FALTABA); 'juego para jugar con amigos en el sillon' -> [overcooked-2, gris, journey, disco-elysium, celeste] (overcooked-2 #1, ANTES FALTABA); 'indie corto y emotivo con historia' -> gris #1 (OK); 'rpg con elecciones que importan' -> disco-elysium #1, witcher-3 #2 (OK); 'plataformas con dificultad muy alta' -> celeste presente #4 (OK via celeste). Las 5 expectativas pasan.", 'Re-vectorizacion (python scripts/vectorize.py): exit 0, 10 juegos x 384 dims regenerados en dist/embeddings.json. Re-emision (python scripts/emit_reference_vectors.py): exit 0, 6 queries de referencia re-escritas en tests/fixtures/query-vectors.reference.json (cambiaron los top_k_ids, no los vectores de las queries).', 'Baseline RED confirmado ANTES de editar: corriendo test_search_regression.py contra el catalogo viejo fallaban EXACTAMENTE las 2 esperadas (souls-like->hollow-knight y sillon->overcooked-2), 4 passed. El test efectivamente detecta la regresion, no es falso verde.', 'specs/search-expectations.yaml NO se modifico (git status confirma: no aparece en el diff). No se debilito ninguna expectativa. El test de regla del YAML pasa: cada id de must_include_any_of existe como catalog/<id>.md.', 'Solo se tocaron files_in_scope: tests/test_search_regression.py (nuevo), catalog/overcooked-2.md, catalog/hollow-knight.md, README.md, PRESENTACION.md (modificados), tests/fixtures/query-vectors.reference.json y dist/embeddings.json (regenerados). git status confirma que dist/, models/ y node_modules/ siguen gitignored (nada pesado staged).'], 'unverified_claims': ['La calidad semantica de OTRAS queries en espanol (fuera de las 5 de la spec) no se midio; ADR-003 ya aceptó que pueden seguir flojas (alcance academico). El afinado solo garantiza las expectativas declaradas.', 'El equivalence test corrio con el modelo CACHEADO localmente; la dependencia de red del HF Hub (primera bajada del modelo ~23MB) no se ejercito en esta corrida, es dependencia conocida del Paso 4.', 'El test de regresion hace pytest.skip con razon accionable si falta models/ o dist/embeddings.json; el path de skip se razono pero no se forzó en esta corrida (ambos artefactos estaban presentes). El path feliz si se ejercito.', "hollow-knight tambien es esperado en 'plataformas con dificultad muy alta' pero ESA expectativa pasa via celeste (#4), no via hollow-knight (que no entro al top-5 de esa query). La expectativa es inclusion-only asi que pasa, pero el refuerzo souls-like de hollow-knight no lo subio a esa query puntual."], 'artifacts_touched': ['tests/test_search_regression.py', 'catalog/overcooked-2.md', 'catalog/hollow-knight.md', 'dist/embeddings.json', 'tests/fixtures/query-vectors.reference.json', 'README.md', 'PRESENTACION.md'], 'note': 'documenter: Paso 5 COMPLETO y VERDE, los 6 hooks en exit 0 (5 required + 1 optional). Se puede cerrar como \'closed\' (no handoff). Resumen del approach: red de regresion semantica (Capa B->tests) + afinado de catalogo en espanol siguiendo ADR-002 (query sin padding) y ADR-003 (afinar contenido, no cambiar modelo). NO se creo ningun ADR nuevo: las decisiones de arquitectura (modelo fijo, query sin padding) ya estan en ADR-001/002/003; el Paso 5 es la IMPLEMENTACION de lo que ADR-003 difirio, no una decision nueva irreversible. Detalle editorial: tests/test_search_regression.py NO duplica pooling/L2 (reusa embed/load_model de vectorize.py, DRY) y usa una fixture de modulo para cargar el modelo una sola vez. Edge honesto a documentar: la query \'plataformas con dificultad muy alta\' pasa SOLO via celeste, hollow-knight NO entra al top-5 ahi pese al refuerzo souls-like (la expectativa es inclusion-only con [celeste, hollow-knight], asi que pasa). Si en el futuro se quita celeste de esa expectativa, romperia. README linea 5 (headline sillon->Overcooked2) ahora es REAL y verificado. PRESENTACION: se reviso el fragmento Paso 4 para que no sobrevenda (aclara que la equivalencia prueba IGUALDAD no CALIDAD, y que la demo en espanol se difirio a Paso 5) y se appendeo el fragmento Paso 5 (3 parrafos). Proximo paso natural: Paso 6 (GitHub Actions CI/CD), pero la spec pide PAUSAR y esperar confirmacion del usuario antes de arrancarlo. NO se commiteó nada (el usuario controla los commits)."'}
+2026-06-02 17:31:48,336 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_session_checkpoint | {"session_id": "2026-06-02_paso-5-tests-de-regresion-semantica-afinado-del-catalogo", "checkpoint_count": 1, "last_checkpoint_at": "2026-06-02T20:31:48.320513+00:00"}...
+2026-06-02 17:35:40,259 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 17:35:40,260 - cortex.mcp.server - INFO - TOOL_CALL: cortex_review_checkpoint | args: {'session_id': '2026-06-02_paso-5-tests-de-regresion-semantica-afinado-del-catalogo'}
+2026-06-02 17:35:40,305 - cortex.mcp.server - INFO - TOOL_CALL: cortex_review_checkpoint | args: {'session_id': '2026-06-02_paso-5-tests-de-regresion-semantica-afinado-del-catalogo'}
+2026-06-02 17:35:40,305 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_review_checkpoint | {"accepted": true, "stage_1_passed": true, "stage_2_passed": true, "reason": "checkpoint passed both gates", "action": "accept"}...
+2026-06-02 17:36:53,302 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 17:36:53,323 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_session_checkpoint | {"session_id": "2026-06-02_paso-5-tests-de-regresion-semantica-afinado-del-catalogo", "checkpoint_count": 2, "last_checkpoint_at": "2026-06-02T20:36:53.311815+00:00"}...
+2026-06-02 17:36:59,743 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 17:36:59,744 - cortex.mcp.server - INFO - TOOL_CALL: cortex_review_checkpoint | args: {'session_id': '2026-06-02_paso-5-tests-de-regresion-semantica-afinado-del-catalogo'}
+2026-06-02 17:36:59,798 - cortex.mcp.server - INFO - TOOL_CALL: cortex_review_checkpoint | args: {'session_id': '2026-06-02_paso-5-tests-de-regresion-semantica-afinado-del-catalogo'}
+2026-06-02 17:36:59,799 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_review_checkpoint | {"accepted": true, "stage_1_passed": true, "stage_2_passed": true, "reason": "checkpoint passed both gates", "action": "accept"}...
+2026-06-02 17:38:40,518 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 17:38:40,519 - cortex.mcp.server - INFO - TOOL_CALL: cortex_ping | args: {}
+2026-06-02 17:38:40,519 - cortex.mcp.server - INFO - TOOL_CALL: cortex_ping | args: {}
+2026-06-02 17:38:40,520 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_ping | {
+  "status": "ok",
+  "version": "2.2",
+  "uptime_seconds": 4637.345,
+  "indices_loaded": true,
+  "models_loaded": [
+    "onnx-embeddings"
+  ],
+  "last_error_seen": null,
+  "recent_errors_count": 0,
+ ...
+2026-06-02 17:38:47,498 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 17:38:47,500 - cortex.mcp.server - INFO - TOOL_CALL: cortex_documenter_briefing | args: {}
+2026-06-02 17:38:47,520 - cortex.documenter.reconstruction - INFO - Session 2026-06-02_paso-5-tests-de-regresion-semantica-afinado-del-catalogo: run_hooks=False; skipping verification hook execution.
+2026-06-02 17:38:47,521 - cortex.mcp.server - INFO - TOOL_CALL: cortex_documenter_briefing | args: {}
+2026-06-02 17:38:47,521 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_documenter_briefing | {"session_id": "2026-06-02_paso-5-tests-de-regresion-semantica-afinado-del-catalogo", "spec": {"path": "C:/Parcial2Calidad-CICD/.cortex/vault/specs/2026-06-02_paso-5-tests-de-regresion-semantica-afina...
+2026-06-02 17:40:17,240 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 17:40:17,243 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_self_review_note | {"warnings": [], "passed": true}...
+2026-06-02 17:40:41,536 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 17:40:41,549 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_write_doc | {"path": "C:\\Parcial2Calidad-CICD\\.cortex\\vault\\sessions\\2026-06-02_paso-5-tests-de-regresion-semantica-afinado-del-catalogo_cierre-paso-5-regresion-semantica.md", "doc_type": "session"}...
+2026-06-02 17:40:49,403 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 17:40:49,407 - cortex.mcp.server - INFO - TOOL_CALL: cortex_close_session | args: {'status': 'closed', 'session_note_path': 'C:\\Parcial2Calidad-CICD\\.cortex\\vault\\sessions\\2026-06-02_paso-5-tests-de-regresion-semantica-afinado-del-catalogo_cierre-paso-5-regresion-semantica.md', 'adrs_created': []}
+2026-06-02 17:40:49,448 - cortex.session.service - INFO - Closed session 2026-06-02_paso-5-tests-de-regresion-semantica-afinado-del-catalogo as closed (mode=managed, end=00000000)
+2026-06-02 17:40:49,449 - cortex.mcp.server - INFO - TOOL_CALL: cortex_close_session | args: {'status': 'closed', 'session_note_path': 'C:\\Parcial2Calidad-CICD\\.cortex\\vault\\sessions\\2026-06-02_paso-5-tests-de-regresion-semantica-afinado-del-catalogo_cierre-paso-5-regresion-semantica.md', 'adrs_created': []}
+2026-06-02 17:40:49,449 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_close_session | {"session_id": "2026-06-02_paso-5-tests-de-regresion-semantica-afinado-del-catalogo", "final_status": "closed", "mode": "managed", "closed_at": "2026-06-02T20:40:49.427173+00:00", "end_commit": "00000...
+2026-06-02 17:42:34,364 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 17:42:37,422 - cortex.context_enricher.co_occurrence - INFO - Built graph with 35 nodes and 304 relationships
+2026-06-02 17:42:37,429 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_sync_ticket | ## Ticket actual
+Crear la spec del Paso 6: pipeline de CI/CD con GitHub Actions (.github/workflows/ci.yml). El CI debe, en cada push/PR: validar el schema del catálogo (Paso 1), correr ruff + pytest i...
+2026-06-02 17:45:03,159 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 17:48:48,338 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 17:52:31,504 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 17:52:37,484 - cortex.semantic.vault_reader - INFO - Vault indexed: 23 documents
+2026-06-02 17:53:40,504 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 17:53:40,505 - cortex.mcp.server - INFO - TOOL_CALL: cortex_session_list | args: {'status': 'open'}
+2026-06-02 17:53:40,517 - cortex.session.service - WARNING - Opening session 2026-06-02_paso-6-ci-con-github-actions in gitless mode (no git repository at C:\Parcial2Calidad-CICD). Documenter will reconstruct from checkpoints only.
+2026-06-02 17:53:40,553 - cortex.mcp.server - INFO - TOOL_CALL: cortex_session_list | args: {'status': 'open'}
+2026-06-02 17:53:40,553 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_session_list | []...
+2026-06-02 17:53:40,559 - cortex.session.service - INFO - Opened session 2026-06-02_paso-6-ci-con-github-actions in gitless mode
+2026-06-02 17:53:54,997 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 17:53:54,998 - cortex.mcp.server - INFO - TOOL_CALL: cortex_session_status | args: {}
+2026-06-02 17:53:55,049 - cortex.mcp.server - INFO - TOOL_CALL: cortex_session_status | args: {}
+2026-06-02 17:53:55,049 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_session_status | {"session_id": "2026-06-02_paso-6-ci-con-github-actions", "spec_path": "C:\\Parcial2Calidad-CICD\\.cortex\\vault\\specs\\2026-06-02_paso-6-ci-con-github-actions.md", "spec_summary": "Cablear Integraci...
+2026-06-02 18:06:57,933 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 18:06:57,947 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_session_checkpoint | {"session_id": "2026-06-02_paso-6-ci-con-github-actions", "checkpoint_count": 1, "last_checkpoint_at": "2026-06-02T21:06:57.938556+00:00"}...
+2026-06-02 18:08:30,045 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 18:08:30,045 - cortex.mcp.server - INFO - TOOL_CALL: cortex_ping | args: {}
+2026-06-02 18:08:30,046 - cortex.mcp.server - INFO - TOOL_CALL: cortex_ping | args: {}
+2026-06-02 18:08:30,046 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_ping | {
+  "status": "ok",
+  "version": "2.2",
+  "uptime_seconds": 6426.871,
+  "indices_loaded": true,
+  "models_loaded": [
+    "onnx-embeddings"
+  ],
+  "last_error_seen": null,
+  "recent_errors_count": 0,
+ ...
+2026-06-02 18:08:36,043 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 18:08:36,044 - cortex.mcp.server - INFO - TOOL_CALL: cortex_documenter_briefing | args: {}
+2026-06-02 18:08:36,096 - cortex.documenter.reconstruction - INFO - Session 2026-06-02_paso-6-ci-con-github-actions: run_hooks=False; skipping verification hook execution.
+2026-06-02 18:08:36,097 - cortex.mcp.server - INFO - TOOL_CALL: cortex_documenter_briefing | args: {}
+2026-06-02 18:08:36,097 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_documenter_briefing | {"session_id": "2026-06-02_paso-6-ci-con-github-actions", "spec": {"path": "C:/Parcial2Calidad-CICD/.cortex/vault/specs/2026-06-02_paso-6-ci-con-github-actions.md", "title": "Paso 6 — CI con GitHub Ac...
+2026-06-02 18:09:25,653 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 18:09:25,657 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_self_review_note | {"warnings": [], "passed": true}...
+2026-06-02 18:09:51,846 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 18:09:51,851 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_write_doc | {"path": "C:\\Parcial2Calidad-CICD\\.cortex\\vault\\sessions\\2026-06-02_paso-6-ci-con-github-actions_cierre-paso-6-ci-con-github-actions.md", "doc_type": "session"}...
+2026-06-02 18:09:59,414 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 18:09:59,415 - cortex.mcp.server - INFO - TOOL_CALL: cortex_close_session | args: {'status': 'closed', 'session_note_path': 'C:\\Parcial2Calidad-CICD\\.cortex\\vault\\sessions\\2026-06-02_paso-6-ci-con-github-actions_cierre-paso-6-ci-con-github-actions.md', 'adrs_created': []}
+2026-06-02 18:09:59,435 - cortex.session.service - INFO - Closed session 2026-06-02_paso-6-ci-con-github-actions as closed (mode=managed, end=00000000)
+2026-06-02 18:09:59,436 - cortex.mcp.server - INFO - TOOL_CALL: cortex_close_session | args: {'status': 'closed', 'session_note_path': 'C:\\Parcial2Calidad-CICD\\.cortex\\vault\\sessions\\2026-06-02_paso-6-ci-con-github-actions_cierre-paso-6-ci-con-github-actions.md', 'adrs_created': []}
+2026-06-02 18:09:59,436 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_close_session | {"session_id": "2026-06-02_paso-6-ci-con-github-actions", "final_status": "closed", "mode": "managed", "closed_at": "2026-06-02T21:09:59.422431+00:00", "end_commit": "000000000000000000000000000000000...
+2026-06-02 18:32:07,597 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 18:32:07,600 - cortex.mcp.server - INFO - TOOL_CALL: cortex_sync_ticket | args: {'user_request': 'Crear la spec del Paso 7: Docker. Empaquetar el entorno de build reproducible del proyecto en una imagen Docker — el "entorno del dev con build local" de la consigna de CI/CD. La idea: un Dockerfile que tenga Python + Node + las dependencias (pip install -e .[dev] + npm ci) para correr el pipeline completo (download_model, ruff, validate_catalog, vectorize, pytest, check_site, tests JS incl. equivalencia) de forma idéntica al CI y al dev local, sin instalar nada en la máquina del usuario. Más allá de eso, Docker como entorno reproducible para vectorizar el catálogo y/o servir el sitio estático localmente. NO incluye el deploy/CD a GitHub Pages (eso queda para el cierre del proyecto).', 'title_hint': 'Paso 7 — Docker: entorno de build reproducible', 'keywords': 'paso-7, docker, dockerfile, contenedor, build-reproducible, entorno-dev, pipeline, vectorize, equivalence, node, python, dockerignore, compose', 'changed_files': 'Dockerfile, .dockerignore, README.md, PRESENTACION.md'}
+2026-06-02 18:32:08,058 - cortex.context_enricher.co_occurrence - INFO - Built graph with 36 nodes and 307 relationships
+2026-06-02 18:32:08,062 - cortex.mcp.server - INFO - TOOL_CALL: cortex_sync_ticket | args: {'user_request': 'Crear la spec del Paso 7: Docker. Empaquetar el entorno de build reproducible del proyecto en una imagen Docker — el "entorno del dev con build local" de la consigna de CI/CD. La idea: un Dockerfile que tenga Python + Node + las dependencias (pip install -e .[dev] + npm ci) para correr el pipeline completo (download_model, ruff, validate_catalog, vectorize, pytest, check_site, tests JS incl. equivalencia) de forma idéntica al CI y al dev local, sin instalar nada en la máquina del usuario. Más allá de eso, Docker como entorno reproducible para vectorizar el catálogo y/o servir el sitio estático localmente. NO incluye el deploy/CD a GitHub Pages (eso queda para el cierre del proyecto).', 'title_hint': 'Paso 7 — Docker: entorno de build reproducible', 'keywords': 'paso-7, docker, dockerfile, contenedor, build-reproducible, entorno-dev, pipeline, vectorize, equivalence, node, python, dockerignore, compose', 'changed_files': 'Dockerfile, .dockerignore, README.md, PRESENTACION.md'}
+2026-06-02 18:32:08,062 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_sync_ticket | ## Ticket actual
+Crear la spec del Paso 7: Docker. Empaquetar el entorno de build reproducible del proyecto en una imagen Docker — el "entorno del dev con build local" de la consigna de CI/CD. La idea...
+2026-06-02 18:33:53,917 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 18:37:10,628 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 18:37:13,956 - cortex.semantic.vault_reader - INFO - Vault indexed: 25 documents
+2026-06-02 18:38:17,353 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 18:38:17,355 - cortex.mcp.server - INFO - TOOL_CALL: cortex_session_status | args: {}
+2026-06-02 18:38:17,355 - cortex.mcp.server - INFO - TOOL_CALL: cortex_session_status | args: {}
+2026-06-02 18:38:17,363 - cortex.session.service - WARNING - Opening session 2026-06-02_paso-7-docker-entorno-de-build-reproducible in gitless mode (no git repository at C:\Parcial2Calidad-CICD). Documenter will reconstruct from checkpoints only.
+2026-06-02 18:38:17,381 - cortex.session.service - INFO - Opened session 2026-06-02_paso-7-docker-entorno-de-build-reproducible in gitless mode
+2026-06-02 18:38:26,634 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 18:38:26,635 - cortex.mcp.server - INFO - TOOL_CALL: cortex_session_list | args: {'status': 'open'}
+2026-06-02 18:38:26,705 - cortex.mcp.server - INFO - TOOL_CALL: cortex_session_list | args: {'status': 'open'}
+2026-06-02 18:38:26,705 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_session_list | [{"session_id": "2026-06-02_paso-7-docker-entorno-de-build-reproducible", "status": "open", "mode": "unknown", "opened_at": "2026-06-02T21:38:17.363869+00:00", "closed_at": null, "checkpoint_count": 0...
+2026-06-02 18:41:01,994 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 18:41:01,994 - cortex.mcp.server - INFO - TOOL_CALL: cortex_session_status | args: {}
+2026-06-02 18:41:02,024 - cortex.mcp.server - INFO - TOOL_CALL: cortex_session_status | args: {}
+2026-06-02 18:41:02,024 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_session_status | {"session_id": "2026-06-02_paso-7-docker-entorno-de-build-reproducible", "spec_path": "C:\\Parcial2Calidad-CICD\\.cortex\\vault\\specs\\2026-06-02_paso-7-docker-entorno-de-build-reproducible.md", "spe...
+2026-06-02 18:48:10,853 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 18:48:10,877 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_session_checkpoint | {"session_id": "2026-06-02_paso-7-docker-entorno-de-build-reproducible", "checkpoint_count": 1, "last_checkpoint_at": "2026-06-02T21:48:10.859644+00:00"}...
+2026-06-02 19:23:12,181 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 19:23:12,183 - cortex.mcp.server - INFO - TOOL_CALL: cortex_ping | args: {}
+2026-06-02 19:23:12,184 - cortex.mcp.server - INFO - TOOL_CALL: cortex_ping | args: {}
+2026-06-02 19:23:12,184 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_ping | {
+  "status": "ok",
+  "version": "2.2",
+  "uptime_seconds": 10909.009,
+  "indices_loaded": true,
+  "models_loaded": [
+    "onnx-embeddings"
+  ],
+  "last_error_seen": null,
+  "recent_errors_count": 0,
+...
+2026-06-02 19:23:19,229 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 19:23:19,230 - cortex.mcp.server - INFO - TOOL_CALL: cortex_documenter_briefing | args: {}
+2026-06-02 19:23:19,291 - cortex.documenter.reconstruction - INFO - Session 2026-06-02_paso-7-docker-entorno-de-build-reproducible: run_hooks=False; skipping verification hook execution.
+2026-06-02 19:23:19,292 - cortex.mcp.server - INFO - TOOL_CALL: cortex_documenter_briefing | args: {}
+2026-06-02 19:23:19,292 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_documenter_briefing | {"session_id": "2026-06-02_paso-7-docker-entorno-de-build-reproducible", "spec": {"path": "C:/Parcial2Calidad-CICD/.cortex/vault/specs/2026-06-02_paso-7-docker-entorno-de-build-reproducible.md", "titl...
+2026-06-02 19:24:12,512 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 19:24:12,516 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_self_review_note | {"warnings": ["Placeholder token detected: 'todo'"], "passed": false}...
+2026-06-02 19:24:51,227 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 19:24:51,232 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_self_review_note | {"warnings": [], "passed": true}...
+2026-06-02 19:25:20,018 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 19:25:20,035 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_write_doc | {"path": "C:\\Parcial2Calidad-CICD\\.cortex\\vault\\handoffs\\2026-06-02_handoff-paso-7-docker-build-sin-validar.md", "doc_type": "handoff"}...
+2026-06-02 19:25:27,042 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 19:25:27,044 - cortex.mcp.server - INFO - TOOL_CALL: cortex_close_session | args: {'status': 'handoff', 'session_note_path': 'C:\\Parcial2Calidad-CICD\\.cortex\\vault\\handoffs\\2026-06-02_handoff-paso-7-docker-build-sin-validar.md', 'adrs_created': []}
+2026-06-02 19:25:27,061 - cortex.session.service - INFO - Closed session 2026-06-02_paso-7-docker-entorno-de-build-reproducible as handoff (mode=managed, end=00000000)
+2026-06-02 19:25:27,062 - cortex.mcp.server - INFO - TOOL_CALL: cortex_close_session | args: {'status': 'handoff', 'session_note_path': 'C:\\Parcial2Calidad-CICD\\.cortex\\vault\\handoffs\\2026-06-02_handoff-paso-7-docker-build-sin-validar.md', 'adrs_created': []}
+2026-06-02 19:25:27,062 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_close_session | {"session_id": "2026-06-02_paso-7-docker-entorno-de-build-reproducible", "final_status": "handoff", "mode": "managed", "closed_at": "2026-06-02T22:25:27.053193+00:00", "end_commit": "00000000000000000...
+2026-06-02 19:35:31,074 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 19:35:31,077 - cortex.mcp.server - INFO - TOOL_CALL: cortex_sync_ticket | args: {'user_request': 'Crear UNA spec de cierre/publicación (Paso 8 / CD): 1) arreglar .gitignore — hoy ignora solo models/*.onnx, así que models/tokenizer.json (~711KB) quedaría versionado; ignorar models/ entero. 2) Reemplazar el placeholder OWNER/REPO del badge de CI en README.md por el path real del repo en GitHub. 3) Implementar el CD (Entrega Continua) a GitHub Pages: el job/workflow de deploy en push a main que construye el artefacto del sitio (site/ + dist/embeddings.json) y publica con actions/deploy-pages, resolviendo la ruta de embeddings.json en producción sin romper el preview local, y documentando el hosting del modelo en prod (el browser lo baja del HF CDN vía Transformers.js). Cierra el CI/CD que se venía difiriendo (Pasos 6-7 eran solo CI y Docker).', 'title_hint': 'Paso 8 — CD a GitHub Pages + arreglos de cierre (.gitignore, badge)', 'keywords': 'paso-8, cd, github-pages, deploy, deploy-pages, actions, gitignore, badge, embeddings-path, hosting-modelo, cierre, ci-cd', 'changed_files': '.github/workflows/ci.yml, .github/workflows/deploy.yml, .gitignore, README.md, site/js/app.mjs, PRESENTACION.md'}
+2026-06-02 19:35:34,421 - cortex.context_enricher.co_occurrence - INFO - Built graph with 39 nodes and 317 relationships
+2026-06-02 19:35:34,428 - cortex.mcp.server - INFO - TOOL_CALL: cortex_sync_ticket | args: {'user_request': 'Crear UNA spec de cierre/publicación (Paso 8 / CD): 1) arreglar .gitignore — hoy ignora solo models/*.onnx, así que models/tokenizer.json (~711KB) quedaría versionado; ignorar models/ entero. 2) Reemplazar el placeholder OWNER/REPO del badge de CI en README.md por el path real del repo en GitHub. 3) Implementar el CD (Entrega Continua) a GitHub Pages: el job/workflow de deploy en push a main que construye el artefacto del sitio (site/ + dist/embeddings.json) y publica con actions/deploy-pages, resolviendo la ruta de embeddings.json en producción sin romper el preview local, y documentando el hosting del modelo en prod (el browser lo baja del HF CDN vía Transformers.js). Cierra el CI/CD que se venía difiriendo (Pasos 6-7 eran solo CI y Docker).', 'title_hint': 'Paso 8 — CD a GitHub Pages + arreglos de cierre (.gitignore, badge)', 'keywords': 'paso-8, cd, github-pages, deploy, deploy-pages, actions, gitignore, badge, embeddings-path, hosting-modelo, cierre, ci-cd', 'changed_files': '.github/workflows/ci.yml, .github/workflows/deploy.yml, .gitignore, README.md, site/js/app.mjs, PRESENTACION.md'}
+2026-06-02 19:35:34,428 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_sync_ticket | ## Ticket actual
+Crear UNA spec de cierre/publicación (Paso 8 / CD): 1) arreglar .gitignore — hoy ignora solo models/*.onnx, así que models/tokenizer.json (~711KB) quedaría versionado; ignorar models/...
+2026-06-02 19:37:37,293 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 19:47:51,400 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 19:48:06,522 - cortex.semantic.vault_reader - INFO - Vault indexed: 27 documents
+2026-06-02 19:48:59,493 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 19:48:59,496 - cortex.mcp.server - INFO - TOOL_CALL: cortex_session_status | args: {}
+2026-06-02 19:48:59,497 - cortex.mcp.server - INFO - TOOL_CALL: cortex_session_status | args: {}
+2026-06-02 19:48:59,511 - cortex.session.service - WARNING - Opening session 2026-06-02_cd-a-github-pages-cierre-cicd in gitless mode (no git repository at C:\Parcial2Calidad-CICD). Documenter will reconstruct from checkpoints only.
+2026-06-02 19:48:59,528 - cortex.session.service - INFO - Opened session 2026-06-02_cd-a-github-pages-cierre-cicd in gitless mode
+2026-06-02 19:49:13,927 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 19:49:13,931 - cortex.mcp.server - INFO - TOOL_CALL: cortex_session_list | args: {'status': 'open'}
+2026-06-02 19:49:14,109 - cortex.mcp.server - INFO - TOOL_CALL: cortex_session_list | args: {'status': 'open'}
+2026-06-02 19:49:14,109 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_session_list | [{"session_id": "2026-06-02_cd-a-github-pages-cierre-cicd", "status": "open", "mode": "unknown", "opened_at": "2026-06-02T22:48:59.511398+00:00", "closed_at": null, "checkpoint_count": 0, "spec_summar...
+2026-06-02 19:57:26,272 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 19:57:26,299 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_session_checkpoint | {"session_id": "2026-06-02_cd-a-github-pages-cierre-cicd", "checkpoint_count": 1, "last_checkpoint_at": "2026-06-02T22:57:26.280658+00:00"}...
+2026-06-02 20:03:13,418 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 20:03:13,419 - cortex.mcp.server - INFO - TOOL_CALL: cortex_ping | args: {}
+2026-06-02 20:03:13,419 - cortex.mcp.server - INFO - TOOL_CALL: cortex_ping | args: {}
+2026-06-02 20:03:13,419 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_ping | {
+  "status": "ok",
+  "version": "2.2",
+  "uptime_seconds": 13310.244,
+  "indices_loaded": true,
+  "models_loaded": [
+    "onnx-embeddings"
+  ],
+  "last_error_seen": null,
+  "recent_errors_count": 0,
+...
+2026-06-02 20:03:20,246 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 20:03:20,250 - cortex.mcp.server - INFO - TOOL_CALL: cortex_documenter_briefing | args: {}
+2026-06-02 20:03:20,371 - cortex.documenter.reconstruction - INFO - Session 2026-06-02_cd-a-github-pages-cierre-cicd: run_hooks=False; skipping verification hook execution.
+2026-06-02 20:03:20,375 - cortex.mcp.server - INFO - TOOL_CALL: cortex_documenter_briefing | args: {}
+2026-06-02 20:03:20,376 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_documenter_briefing | {"session_id": "2026-06-02_cd-a-github-pages-cierre-cicd", "spec": {"path": "C:/Parcial2Calidad-CICD/.cortex/vault/specs/2026-06-02_cd-a-github-pages-cierre-cicd.md", "title": "CD a GitHub Pages (cier...
+2026-06-02 20:04:14,476 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 20:04:14,489 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_self_review_note | {"warnings": [], "passed": true}...
+2026-06-02 20:04:42,511 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 20:04:42,555 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_write_doc | {"path": "C:\\Parcial2Calidad-CICD\\.cortex\\vault\\sessions\\2026-06-02_cd-a-github-pages-cierre-cicd_cierre-cicd-cd-a-github-pages.md", "doc_type": "session"}...
+2026-06-02 20:04:52,021 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-02 20:04:52,026 - cortex.mcp.server - INFO - TOOL_CALL: cortex_close_session | args: {'status': 'closed', 'session_note_path': 'C:\\Parcial2Calidad-CICD\\.cortex\\vault\\sessions\\2026-06-02_cd-a-github-pages-cierre-cicd_cierre-cicd-cd-a-github-pages.md', 'adrs_created': []}
+2026-06-02 20:04:52,073 - cortex.session.service - INFO - Closed session 2026-06-02_cd-a-github-pages-cierre-cicd as closed (mode=managed, end=00000000)
+2026-06-02 20:04:52,074 - cortex.mcp.server - INFO - TOOL_CALL: cortex_close_session | args: {'status': 'closed', 'session_note_path': 'C:\\Parcial2Calidad-CICD\\.cortex\\vault\\sessions\\2026-06-02_cd-a-github-pages-cierre-cicd_cierre-cicd-cd-a-github-pages.md', 'adrs_created': []}
+2026-06-02 20:04:52,074 - cortex.mcp.server - INFO - TOOL_RESULT: cortex_close_session | {"session_id": "2026-06-02_cd-a-github-pages-cierre-cicd", "final_status": "closed", "mode": "managed", "closed_at": "2026-06-02T23:04:52.049935+00:00", "end_commit": "00000000000000000000000000000000...

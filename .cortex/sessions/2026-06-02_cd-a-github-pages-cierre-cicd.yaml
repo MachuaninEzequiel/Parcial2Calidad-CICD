@@ -1,0 +1,84 @@
+session_id: 2026-06-02_cd-a-github-pages-cierre-cicd
+spec_path: C:\Parcial2Calidad-CICD\.cortex\vault\specs\2026-06-02_cd-a-github-pages-cierre-cicd.md
+spec_summary: 'Cerrar el ciclo CI/CD del proyecto implementando la Entrega Continua
+  (CD) a GitHub Pages, más dos arreglos de cierre. (1) Agregar un job `deploy` a .github/workflows/ci.yml
+  que, SOLO en push a main y DESPUÉS de que el job `ci` pase (needs: ci), construye
+  el artefacto del sitio (site/ + dist/embeddings.json) y lo publica en GitHub Pages
+  con actions/deploy-pages. (2) Arreglar .gitignore para ignorar models/ entero (hoy
+  ignora solo models/*.onnx, así que models/tokenizer.json ~711KB se versionaría).
+  (3) Reemplazar el placeholder OWNER/REPO del badge de CI en el README por el path
+  real MachuaninEzequiel/Parcial2Calidad-CICD. El modelo en producción lo baja el
+  navegador del HF CDN (Transformers.js) — cero hosting extra. La ruta de embeddings.json
+  en prod se resuelve SIN tocar app.mjs: el artefacto preserva site/+dist/ y un index.html
+  raíz redirige a ./site/, así `../dist/embeddings.json` resuelve igual en Pages y
+  en el preview local. Cierra el CI/CD que se venía difiriendo (Pasos 6-7 eran solo
+  CI y Docker). Español rioplatense, didáctico, para la defensa oral.'
+start_commit: '0000000000000000000000000000000000000000'
+start_branch: ''
+opened_at: '2026-06-02T22:48:59.511398Z'
+status: closed
+mode: managed
+checkpoints:
+- timestamp: '2026-06-02T22:57:26.280658Z'
+  source: cortex-SDDwork
+  verified_claims:
+  - 'Fast Track. .github/workflows/ci.yml: agregué el job `deploy` (needs: ci, if:
+    github.ref==''refs/heads/main'', permissions contents:read+pages:write+id-token:write,
+    environment github-pages, 10 steps: checkout@v4 → setup-python@v5 → `pip install
+    -e .` → cache@v4 de ~/.cache/huggingface → download_model.py → vectorize.py →
+    ensamblar _site (cp site → _site/site, cp dist/embeddings.json → _site/dist/,
+    index.html redirect a ./site/ via printf, .nojekyll) → configure-pages@v5 → upload-pages-artifact@v3
+    → deploy-pages@v4). El job `ci` quedó INTACTO. Actualicé el comentario de cabecera.
+    Verificado: cd-yaml-valid hook exit 0 (YAML válido, ambos jobs, deploy needs ci,
+    usa deploy-pages); el deploy job parsea con needs/if/permissions/environment/10
+    steps correctos.'
+  - '.gitignore: cambié `models/*.onnx` por `models/` (ignora el directorio entero).
+    gitignore-models hook exit 0.'
+  - 'README: badge ahora apunta a github.com/MachuaninEzequiel/Parcial2Calidad-CICD
+    (reemplacé las 2 URLs del badge + saqué el comentario placeholder + arreglé una
+    2da mención ''reempazá OWNER/REPO'' que había en la sección CI). badge-real hook
+    exit 0. Tabla de mapeo: ''Build que despliega'' y ''Entornos de entrega'' marcadas
+    GitHub Pages ✅ con la URL pública. Estado → Pasos 1-8 (CI/CD completo) + bullet
+    de CD. Estructura (ci.yml = CI+CD). Próximos pasos → solo queda la presentación
+    oral.'
+  - 'PRESENTACION: appendeé el fragmento de cierre ''Entrega Continua (CD) a GitHub
+    Pages'' (~4 párrafos, voseo) tras el del Paso 7. app.mjs NO se tocó (el redirect
+    resuelve la ruta ../dist/embeddings.json en prod); check_site.py sigue exit 0.'
+  unverified_claims:
+  - 'El workflow de deploy NO corre localmente: validé estructura/sintaxis (YAML válido
+    + job deploy bien formado), pero el deploy real (configure/upload/deploy-pages,
+    el redirect, la URL pública) recién se valida al pushear a main. Además GitHub
+    Pages hay que habilitarlo UNA vez en Settings → Pages → Source = ''GitHub Actions''
+    (manual). Igual que el CI del Paso 6, el entregable es el YAML correcto + validación
+    local de estructura.'
+  - 'models/tokenizer.json YA está TRACKEADO en git (git ls-files models/ lo confirma;
+    se commiteó con el patrón viejo models/*.onnx que no lo ignoraba). El .gitignore
+    nuevo (models/) evita FUTURO tracking pero NO destrackea lo ya commiteado: el
+    usuario debe correr `git rm --cached models/tokenizer.json` (o `-r models/`) +
+    commitear para sacarlo del repo. Es operación git, el usuario controla los commits.'
+  - La URL pública https://machuaninezequiel.github.io/Parcial2Calidad-CICD/ se asume
+    del owner/repo confirmado (GitHub lowercasea el owner en la URL); la real depende
+    de la config de Pages.
+  artifacts_touched:
+  - .github/workflows/ci.yml
+  - .gitignore
+  - README.md
+  - PRESENTACION.md
+  note: 'documenter: Fast Track. CD a GitHub Pages implementado — cierra el ciclo
+    CI/CD (CI Actions + Docker + CD Pages). Los 3 hooks required PASAN (cd-yaml-valid,
+    gitignore-models, badge-real). A diferencia del Paso 7 (handoff porque el docker
+    build no se pudo validar y la spec lo pedía explícito), acá los required pasan
+    y la spec encuadra el deploy como ''se valida al pushear'' (igual que el CI del
+    Paso 6, que cerró closed) → cerrable como CLOSED. NO amerita ADR (el hosting vía
+    HF CDN ya se desprende del ADR-001 ''sitio 100% estático''). PENDIENTES OPERATIVOS
+    para el usuario: (1) habilitar Pages en Settings (manual, 1 vez); (2) `git rm
+    --cached models/tokenizer.json` para destrackear lo ya commiteado (el .gitignore
+    solo cubre a futuro); (3) push a main para validar el deploy real. Lo único que
+    queda del proyecto: la presentación oral.'
+verification_results: []
+tasks: []
+closed_at: '2026-06-02T23:04:52.049935Z'
+end_commit: '0000000000000000000000000000000000000000'
+documenter_decision: closed
+session_note_path: C:\Parcial2Calidad-CICD\.cortex\vault\sessions\2026-06-02_cd-a-github-pages-cierre-cicd_cierre-cicd-cd-a-github-pages.md
+adrs_created: []

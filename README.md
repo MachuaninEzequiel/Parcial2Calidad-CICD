@@ -1,7 +1,6 @@
 # 🎮 Buscador Semántico de Videojuegos
 
-<!-- Reemplazá OWNER/REPO por el path real del repo en GitHub cuando lo publiques. -->
-[![CI](https://github.com/OWNER/REPO/actions/workflows/ci.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/ci.yml)
+[![CI](https://github.com/MachuaninEzequiel/Parcial2Calidad-CICD/actions/workflows/ci.yml/badge.svg)](https://github.com/MachuaninEzequiel/Parcial2Calidad-CICD/actions/workflows/ci.yml)
 
 > Catálogo de videojuegos en Markdown que se vectoriza con un modelo de IA dentro del pipeline de CI y se busca por **significado** —no por palabras clave— 100% en el navegador.
 
@@ -43,8 +42,8 @@ La pieza central: **el mismo `model.onnx` corre en dos lugares**. En el CI (con 
 | Servidor de Integración Continua | GitHub Actions ✅ — `.github/workflows/ci.yml` (Paso 6) |
 | Entorno del dev con build local | Docker ✅ — `Dockerfile` + `docker/entrypoint.sh` (Paso 7) |
 | Prueba automatizada | pytest (unitarios + regresión semántica) + gate de equivalencia ✅ |
-| Build que despliega | Job de deploy en Actions → GitHub Pages *(CD: al final del proyecto)* |
-| Entornos de entrega | GitHub Pages (producción) |
+| Build que despliega | GitHub Actions ✅ — job `deploy` → GitHub Pages (CD, en push a `main`) |
+| Entornos de entrega | GitHub Pages ✅ — [sitio público](https://machuaninezequiel.github.io/Parcial2Calidad-CICD/) |
 | Mecanismo de feedback | Status checks en PRs + badges + notificaciones de GitHub |
 
 > **CI (Integración Continua):** cada push se integra, valida y prueba automáticamente.
@@ -60,7 +59,7 @@ La pieza central: **el mismo `model.onnx` corre en dos lugares**. En el CI (con 
 
 ---
 
-## Estado actual — Pasos 1-7 ✅
+## Estado actual — Pasos 1-8 ✅ (CI/CD completo)
 
 - **Paso 1 ✅ · base SDD:** schema, expectativas, catálogo inicial (10 juegos) y el validador.
 - **Paso 2 ✅ · vectorización ONNX:** `scripts/vectorize.py` recorre el catálogo, lo pasa por **all-MiniLM-L6-v2** (ONNX), aplica mean pooling + normalización L2 y genera `dist/embeddings.json` (10 items, vectores de 384 dimensiones).
@@ -69,9 +68,11 @@ La pieza central: **el mismo `model.onnx` corre en dos lugares**. En el CI (con 
 
 - **Paso 5 ✅ · regresión semántica + catálogo afinado:** el loop SDD se cierra. `tests/test_search_regression.py` lee `specs/search-expectations.yaml` **en runtime** y genera un test parametrizado por expectativa (Capa B → tests): vectoriza cada query reusando el `embed()` de `vectorize.py` **sin padding** (régimen browser, ADR-002), rankea contra `dist/embeddings.json` por coseno y exige que `must_include_any_of` caiga en el top-k. Para que el ranking sea bueno con el modelo chico de inglés, se afinó el **contenido del catálogo en español** (ADR-003) en vez de cambiar de modelo: ahora *"juego para jugar con amigos en el sillón"* devuelve **Overcooked 2 en el puesto #1** y *"souls-like para principiantes"* devuelve **Hollow Knight en el #1**, ambas reales. La demo de la línea 5 ya no es aspiracional. En el CI (Paso 6), estos tests corren como gate junto al resto.
 
-- **Paso 6 ✅ · Integración Continua (GitHub Actions):** `.github/workflows/ci.yml` corre en **cada push y cada PR** los MISMOS gates que probás localmente (ver más abajo). Es **solo CI**: la Entrega Continua (deploy a GitHub Pages) y el hosting del modelo en producción quedan para el final del proyecto; Docker es el Paso 7.
+- **Paso 6 ✅ · Integración Continua (GitHub Actions):** `.github/workflows/ci.yml` corre en **cada push y cada PR** los MISMOS gates que probás localmente (ver más abajo). Es **Integración Continua**: la Entrega Continua (CD a GitHub Pages) llegó en el cierre (ver el bullet de CD); Docker es el Paso 7.
 
-- **Paso 7 ✅ · Docker (entorno de build reproducible):** un `Dockerfile` (Python + Node + deps) empaqueta TODO el pipeline en una imagen. `docker run` corre los mismos gates que el CI sin instalar nada en tu máquina — el clásico *"en mi máquina anda"* deja de ser un problema. El `docker/entrypoint.sh` tiene 3 subcomandos: `ci` (pipeline completo), `vectorize` y `serve` (sitio en `:8000`). Ver **"Correr todo en Docker"** más abajo. (Es el entorno de build local de la consigna; el deploy/CD sigue diferido al cierre.)
+- **Paso 7 ✅ · Docker (entorno de build reproducible):** un `Dockerfile` (Python + Node + deps) empaqueta TODO el pipeline en una imagen. `docker run` corre los mismos gates que el CI sin instalar nada en tu máquina — el clásico *"en mi máquina anda"* deja de ser un problema. El `docker/entrypoint.sh` tiene 3 subcomandos: `ci` (pipeline completo), `vectorize` y `serve` (sitio en `:8000`). Ver **"Correr todo en Docker"** más abajo. (Es el entorno de build local de la consigna.)
+
+- **Cierre ✅ · Entrega Continua (CD) a GitHub Pages:** el job `deploy` de `.github/workflows/ci.yml` se dispara en **push a `main`** (solo si el job `ci` pasó) y publica el sitio en **GitHub Pages** con `actions/deploy-pages`. Con esto el ciclo **CI/CD queda completo**: build local con Docker + CI con Actions + CD a Pages. El sitio público vive en **https://machuaninezequiel.github.io/Parcial2Calidad-CICD/**. En producción el navegador baja el modelo del **HF CDN** (Transformers.js), así que no hace falta hostearlo; el `embeddings.json` viaja en el artefacto de Pages. (Pages se habilita una vez en *Settings → Pages → Source = GitHub Actions*.)
 
 > **Detalle clave de la equivalencia:** el catálogo (Paso 2) se vectoriza con el tokenizer pad-eando a 128 tokens; el navegador vectoriza la query **sin padding** (solo los tokens reales). Como el modelo es int8, el largo de secuencia afecta la cuantización, así que la referencia de Python (`scripts/emit_reference_vectors.py`) también vectoriza las queries **sin padding** para reproducir EXACTO lo que hace el browser. Con eso el diff cae de ~3e-2 a ~4e-8. El test de regresión del Paso 5 vectoriza la query con el MISMO régimen sin padding, así el ranking del gate coincide con el del navegador.
 
@@ -133,7 +134,7 @@ node --test tests/equivalence/embed.equiv.test.mjs   # diff < 1e-5 y ranking id�
 6. `node --test site/js/search.test.mjs` — funciones puras (sin npm).
 7. `node --test tests/equivalence/embed.equiv.test.mjs` — **equivalencia Python↔JS** (riesgo #1 del ADR-001).
 
-El modelo (~23 MB) se baja una vez y se **cachea** entre runs. El principio: *lo que valida tu máquina es exactamente lo que valida el servidor*. **Es solo CI** — el **deploy continuo (CD)** a GitHub Pages y el hosting del modelo en producción se resuelven al final del proyecto; **Docker** es el Paso 7. El badge de arriba refleja el último run (reemplazá `OWNER/REPO` por el path real al publicar).
+El modelo (~23 MB) se baja una vez y se **cachea** entre runs. El principio: *lo que valida tu máquina es exactamente lo que valida el servidor*. El mismo workflow tiene además el job **`deploy`** (CD) que publica el sitio en GitHub Pages en cada push a `main`, pero **solo si el job `ci` pasó** (ver el bullet de CD más arriba). El badge refleja el último run del CI.
 
 ### Correr todo en Docker (Paso 7)
 
@@ -168,7 +169,7 @@ El subcomando por defecto es `ci` (el pipeline completo). El `docker/entrypoint.
 │   └── entrypoint.sh             # subcomandos del contenedor: ci | vectorize | serve
 ├── .github/
 │   └── workflows/
-│       └── ci.yml                # Integración Continua (Paso 6): corre todos los gates
+│       └── ci.yml                # CI (gates, Paso 6) + CD (job deploy → Pages en main)
 ├── schemas/
 │   └── game.schema.yaml          # SDD Capa A · fuente de verdad estructural
 ├── specs/
@@ -207,4 +208,4 @@ El subcomando por defecto es `ci` (el pipeline completo). El `docker/entrypoint.
 └── README.md
 ```
 
-> **Próximos pasos:** la **presentación oral** (Paso 8) y, como cierre, el **deploy continuo (CD) a GitHub Pages** + el hosting del modelo en producción. Los Pasos 6 y 7 ya dejaron andando la **Integración Continua** (`.github/workflows/ci.yml`) y el **entorno de build reproducible** (`Dockerfile`).
+> **Estado:** el ciclo **CI/CD está completo** — CI (GitHub Actions) + entorno de build reproducible (Docker) + CD (deploy a GitHub Pages en `main`). Lo único que queda es la **presentación oral** del proyecto (el guion está en `PRESENTACION.md`).

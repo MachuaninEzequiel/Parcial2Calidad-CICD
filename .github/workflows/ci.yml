@@ -4,8 +4,9 @@ name: CI
 # los MISMOS gates que el dev corre localmente. Lo que valida tu máquina es
 # exactamente lo que valida GitHub Actions.
 #
-# Esto es SOLO CI: el deploy continuo (CD) a GitHub Pages y el hosting del modelo
-# en producción se resuelven al final del proyecto. Docker es el Paso 7.
+# El job `ci` corre en cada push y PR. El job `deploy` (más abajo) es la Entrega
+# Continua (CD): SOLO en push a main y SOLO si `ci` pasó, publica el sitio en
+# GitHub Pages. En producción el navegador baja el modelo del HF CDN (Transformers.js).
 on:
   push:
   pull_request:
@@ -81,3 +82,72 @@ jobs:
 
       - name: Gate de equivalencia Python<->JS (riesgo #1 del ADR-001)
         run: node --test tests/equivalence/embed.equiv.test.mjs
+
+  # ── CD: Entrega Continua a GitHub Pages ──────────────────────────────────
+  # Solo en push a `main` y SOLO si el job `ci` pasó (needs: ci). Construye el
+  # artefacto del sitio (site/ + dist/embeddings.json) y lo publica en Pages.
+  # El modelo NO viaja en el artefacto: el navegador lo baja del HF CDN.
+  deploy:
+    needs: ci
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Instalar dependencias Python (runtime)
+        run: pip install -e .
+
+      - name: Cache del modelo (HuggingFace)
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: hf-${{ runner.os }}-${{ hashFiles('scripts/download_model.py') }}
+
+      - name: Bajar modelo + tokenizer
+        run: python scripts/download_model.py
+
+      - name: Vectorizar catálogo (genera dist/embeddings.json)
+        run: python scripts/vectorize.py
+
+      # Armamos el artefacto preservando site/ + dist/ para que la ruta relativa
+      # ../dist/embeddings.json de app.mjs resuelva en prod igual que en el
+      # preview local. Un index.html en la raíz redirige a ./site/.
+      - name: Ensamblar el sitio para Pages
+        run: |
+          mkdir -p _site/dist
+          cp -r site _site/site
+          cp dist/embeddings.json _site/dist/embeddings.json
+          touch _site/.nojekyll
+          printf '%s\n' \
+            '<!doctype html>' \
+            '<html lang="es"><head><meta charset="utf-8">' \
+            '<meta http-equiv="refresh" content="0; url=./site/">' \
+            '<title>Buscador Semantico de Videojuegos</title></head>' \
+            '<body><p>Redirigiendo al <a href="./site/">Buscador Semantico de Videojuegos</a>.</p></body></html>' \
+            > _site/index.html
+
+      - name: Configurar Pages
+        uses: actions/configure-pages@v5
+
+      - name: Subir el artefacto del sitio
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy a GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
