@@ -38,11 +38,11 @@ La pieza central: **el mismo `model.onnx` corre en dos lugares**. En el CI (con 
 
 | Bloque del esquema teórico | Implementación concreta |
 |---|---|
-| Control de versiones | GitHub (`main` + feature branches + PRs) |
+| Control de versiones | GitHub (`master` + feature branches + PRs) |
 | Servidor de Integración Continua | GitHub Actions ✅ — `.github/workflows/ci.yml` (Paso 6) |
 | Entorno del dev con build local | Docker ✅ — `Dockerfile` + `docker/entrypoint.sh` (Paso 7) |
 | Prueba automatizada | pytest (unitarios + regresión semántica) + gate de equivalencia ✅ |
-| Build que despliega | GitHub Actions ✅ — job `deploy` → GitHub Pages (CD, en push a `main`) |
+| Build que despliega | GitHub Actions ✅ — job `deploy` → GitHub Pages (CD, en push a `master`) |
 | Entornos de entrega | GitHub Pages ✅ — [sitio público](https://machuaninezequiel.github.io/Parcial2Calidad-CICD/) |
 | Mecanismo de feedback | Status checks en PRs + badges + notificaciones de GitHub |
 
@@ -72,7 +72,7 @@ La pieza central: **el mismo `model.onnx` corre en dos lugares**. En el CI (con 
 
 - **Paso 7 ✅ · Docker (entorno de build reproducible):** un `Dockerfile` (Python + Node + deps) empaqueta TODO el pipeline en una imagen. `docker run` corre los mismos gates que el CI sin instalar nada en tu máquina — el clásico *"en mi máquina anda"* deja de ser un problema. El `docker/entrypoint.sh` tiene 3 subcomandos: `ci` (pipeline completo), `vectorize` y `serve` (sitio en `:8000`). Ver **"Correr todo en Docker"** más abajo. (Es el entorno de build local de la consigna.)
 
-- **Cierre ✅ · Entrega Continua (CD) a GitHub Pages:** el job `deploy` de `.github/workflows/ci.yml` se dispara en **push a `main`** (solo si el job `ci` pasó) y publica el sitio en **GitHub Pages** con `actions/deploy-pages`. Con esto el ciclo **CI/CD queda completo**: build local con Docker + CI con Actions + CD a Pages. El sitio público vive en **https://machuaninezequiel.github.io/Parcial2Calidad-CICD/**. En producción el navegador baja el modelo del **HF CDN** (Transformers.js), así que no hace falta hostearlo; el `embeddings.json` viaja en el artefacto de Pages. (Pages se habilita una vez en *Settings → Pages → Source = GitHub Actions*.)
+- **Cierre ✅ · Entrega Continua (CD) a GitHub Pages:** el job `deploy` de `.github/workflows/ci.yml` se dispara en **push a `master`** (solo si el job `ci` pasó) y publica el sitio en **GitHub Pages** con `actions/deploy-pages`. Con esto el ciclo **CI/CD queda completo**: build local con Docker + CI con Actions + CD a Pages. El sitio público vive en **https://machuaninezequiel.github.io/Parcial2Calidad-CICD/**. En producción el navegador baja el modelo del **HF CDN** (Transformers.js), así que no hace falta hostearlo; el `embeddings.json` viaja en el artefacto de Pages. (Pages se habilita una vez en *Settings → Pages → Source = GitHub Actions*.)
 
 > **Detalle clave de la equivalencia:** el catálogo (Paso 2) se vectoriza con el tokenizer pad-eando a 128 tokens; el navegador vectoriza la query **sin padding** (solo los tokens reales). Como el modelo es int8, el largo de secuencia afecta la cuantización, así que la referencia de Python (`scripts/emit_reference_vectors.py`) también vectoriza las queries **sin padding** para reproducir EXACTO lo que hace el browser. Con eso el diff cae de ~3e-2 a ~4e-8. El test de regresión del Paso 5 vectoriza la query con el MISMO régimen sin padding, así el ranking del gate coincide con el del navegador.
 
@@ -134,7 +134,7 @@ node --test tests/equivalence/embed.equiv.test.mjs   # diff < 1e-5 y ranking id�
 6. `node --test site/js/search.test.mjs` — funciones puras (sin npm).
 7. `node --test tests/equivalence/embed.equiv.test.mjs` — **equivalencia Python↔JS** (riesgo #1 del ADR-001).
 
-El modelo (~23 MB) se baja una vez y se **cachea** entre runs. El principio: *lo que valida tu máquina es exactamente lo que valida el servidor*. El mismo workflow tiene además el job **`deploy`** (CD) que publica el sitio en GitHub Pages en cada push a `main`, pero **solo si el job `ci` pasó** (ver el bullet de CD más arriba). El badge refleja el último run del CI.
+El modelo (~23 MB) se baja una vez y se **cachea** entre runs. El principio: *lo que valida tu máquina es exactamente lo que valida el servidor*. El mismo workflow tiene además el job **`deploy`** (CD) que publica el sitio en GitHub Pages en cada push a `master`, pero **solo si el job `ci` pasó** (ver el bullet de CD más arriba). El badge refleja el último run del CI.
 
 ### Correr todo en Docker (Paso 7)
 
@@ -208,4 +208,4 @@ El subcomando por defecto es `ci` (el pipeline completo). El `docker/entrypoint.
 └── README.md
 ```
 
-> **Estado:** el ciclo **CI/CD está completo** — CI (GitHub Actions) + entorno de build reproducible (Docker) + CD (deploy a GitHub Pages en `main`). Lo único que queda es la **presentación oral** del proyecto (el guion está en `PRESENTACION.md`).
+> **Estado:** el ciclo **CI/CD está completo** — CI (GitHub Actions) + entorno de build reproducible (Docker) + CD (deploy a GitHub Pages en `master`). Lo único que queda es la **presentación oral** del proyecto (el guion está en `PRESENTACION.md`).

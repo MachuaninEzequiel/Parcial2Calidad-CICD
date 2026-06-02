@@ -5,7 +5,7 @@ name: CI
 # exactamente lo que valida GitHub Actions.
 #
 # El job `ci` corre en cada push y PR. El job `deploy` (más abajo) es la Entrega
-# Continua (CD): SOLO en push a main y SOLO si `ci` pasó, publica el sitio en
+# Continua (CD): SOLO en push a master y SOLO si `ci` pasó, publica el sitio en
 # GitHub Pages. En producción el navegador baja el modelo del HF CDN (Transformers.js).
 on:
   push:
@@ -84,12 +84,12 @@ jobs:
         run: node --test tests/equivalence/embed.equiv.test.mjs
 
   # ── CD: Entrega Continua a GitHub Pages ──────────────────────────────────
-  # Solo en push a `main` y SOLO si el job `ci` pasó (needs: ci). Construye el
+  # Solo en push a `master` y SOLO si el job `ci` pasó (needs: ci). Construye el
   # artefacto del sitio (site/ + dist/embeddings.json) y lo publica en Pages.
   # El modelo NO viaja en el artefacto: el navegador lo baja del HF CDN.
   deploy:
     needs: ci
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     permissions:
       contents: read
