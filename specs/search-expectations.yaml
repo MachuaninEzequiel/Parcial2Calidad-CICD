@@ -1,0 +1,37 @@
+# =============================================================================
+# SDD · Capa B — Spec de comportamiento de búsqueda
+# =============================================================================
+# Esto NO son tests: son EXPECTATIVAS declarativas. El Paso 5 genera tests
+# automáticamente desde este archivo. Cada expectativa dice: "para esta query,
+# al menos uno de estos juegos tiene que aparecer entre los top K resultados".
+#
+# Para qué sirve: es una red de seguridad de REGRESIÓN SEMÁNTICA. Si agrego un
+# juego nuevo y eso degrada el ranking de una query que antes andaba bien, el
+# CI me avisa.
+#
+# REGLA: cada id en must_include_any_of DEBE existir como catalog/<id>.md.
+# =============================================================================
+
+expectations:
+  - query: "souls-like para principiantes"
+    # "souls-like" aparece literal en el summary de hollow-knight, pero la idea
+    # es que el modelo entienda el ESTILO, no que haga match de palabras.
+    must_include_any_of: [hollow-knight]
+    in_top_k: 5
+
+  - query: "juego para jugar con amigos en el sillón"
+    must_include_any_of: [overcooked-2]
+    in_top_k: 5
+
+  - query: "indie corto y emotivo con historia"
+    must_include_any_of: [gris, journey, celeste, firewatch]
+    in_top_k: 5
+
+  - query: "rpg con elecciones que importan"
+    must_include_any_of: [disco-elysium, witcher-3]
+    in_top_k: 5
+
+  - query: "plataformas con dificultad muy alta"
+    # Ni celeste ni hollow-knight dicen "dificultad muy alta": el match es semántico.
+    must_include_any_of: [celeste, hollow-knight]
+    in_top_k: 5

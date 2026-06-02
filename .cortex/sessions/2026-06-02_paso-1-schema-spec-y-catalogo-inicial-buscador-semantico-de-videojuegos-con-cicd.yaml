@@ -1,0 +1,88 @@
+session_id: 2026-06-02_paso-1-schema-spec-y-catalogo-inicial-buscador-semantico-de-videojuegos-con-cicd
+spec_path: C:\Parcial2Calidad-CICD\.cortex\vault\specs\2026-06-02_paso-1-schema-spec-y-catalogo-inicial-buscador-semantico-de-videojuegos-con-cicd.md
+spec_summary: 'Establecer la base Spec-Driven del proyecto: la estructura de carpetas,
+  el schema estructural del ítem de catálogo (fuente de verdad de campos, géneros
+  y plataformas), las expectativas declarativas de búsqueda, un catálogo inicial de
+  8-10 videojuegos en español con sinopsis ricas, un validador en Python que chequea
+  cada .md contra el schema, y un README inicial que declara la postura SDD. Al cierre,
+  el catálogo válido pasa la validación y un .md malformado de fixture la falla. NO
+  se implementa vectorización ONNX, frontend ni CI todavía (eso es Paso 2 en adelante).
+  Todo en español rioplatense (voseo), didáctico, pensado para una defensa oral de
+  5 minutos.'
+start_commit: '0000000000000000000000000000000000000000'
+start_branch: ''
+opened_at: '2026-06-02T15:57:51.694892Z'
+status: closed
+mode: managed
+checkpoints:
+- timestamp: '2026-06-02T16:29:28.459762Z'
+  source: cortex-SDDwork
+  verified_claims:
+  - 'Paso 1 implementado en Fast Track: 18 archivos creados (pyproject.toml, .gitignore,
+    schemas/game.schema.yaml, specs/search-expectations.yaml, 10 catalog/*.md, tests/fixtures/invalid-game.md,
+    scripts/validate_catalog.py, README.md, PRESENTACION.md).'
+  - 'Hook validate-catalog-ok VERIFICADO: `python scripts/validate_catalog.py` termina
+    exit 0 con 10/10 juegos válidos contra el JSON Schema draft-07.'
+  - 'Hook reject-malformed-md VERIFICADO: `python scripts/validate_catalog.py --expect-fail
+    tests/fixtures/invalid-game.md` termina exit 0; el validador reporta 6 violaciones
+    reales (genres enum, id pattern, platforms enum, summary minLength, title minLength,
+    year maximum).'
+  - 'Hook ruff-lint (opcional) VERIFICADO: `ruff check .` exit 0 (All checks passed)
+    y `ruff format --check .` exit 0 (ya formateado).'
+  - 'Equivalencia de ids verificada: las 5 expectativas de search-expectations.yaml
+    referencian solo ids que existen como catalog/<id>.md (hollow-knight, overcooked-2,
+    gris, journey, celeste, firewatch, disco-elysium, witcher-3).'
+  - 'Fix de portabilidad aplicado y verificado: en Windows la consola cp1252 crasheaba
+    al imprimir ✓/✗ (UnicodeEncodeError); validate_catalog.py ahora reconfigura stdout/stderr
+    a UTF-8 y corre igual en Windows local y en el runner Linux del CI.'
+  unverified_claims:
+  - check-jsonschema (la CLI que usará el CI en Paso 6) NO se corrió todavía; la equivalencia
+    con la validación local vía la lib jsonschema se asume por compartir el mismo
+    schema draft-07, y se confirmará al escribir ci.yml.
+  - 'No se inicializó git ni se hizo commit: el directorio no es un repo git aún.
+    El brief sugiere un commit por paso, pero no se pidió explícitamente; queda a
+    decisión del usuario.'
+  - 'Decisión de diseño a registrar: el límite summary 80-1000 chars del schema (fuente
+    de verdad) se priorizó sobre el orientativo ''~150-300 palabras'' del plan; las
+    sinopsis quedaron en ~120-140 palabras (~800-950 chars). Para sinopsis más largas
+    habría que subir maxLength en el schema PRIMERO (regla SDD Capa C).'
+  artifacts_touched:
+  - pyproject.toml
+  - .gitignore
+  - schemas/game.schema.yaml
+  - specs/search-expectations.yaml
+  - catalog/hollow-knight.md
+  - catalog/celeste.md
+  - catalog/overcooked-2.md
+  - catalog/gris.md
+  - catalog/journey.md
+  - catalog/firewatch.md
+  - catalog/disco-elysium.md
+  - catalog/witcher-3.md
+  - catalog/hades.md
+  - catalog/stardew-valley.md
+  - tests/fixtures/invalid-game.md
+  - scripts/validate_catalog.py
+  - README.md
+  - PRESENTACION.md
+  note: 'documenter: Paso 1 (base SDD) completo y verificado, los 3 hooks en verde.
+    DECISIÓN DE DISEÑO clave para la session note: el `summary` es el CUERPO del .md,
+    no un campo del frontmatter; validate_catalog.py reconstruye {**frontmatter, summary:
+    body} antes de validar — misma estructura que consumirá embeddings.json en Paso
+    2. ADR sugerido (viene de cortex-sync): génesis de arquitectura (sitio 100% estático,
+    el mismo model.onnx en CI y browser, SDD como fuente de verdad con el enum de
+    géneros viviendo solo en el schema). CONTEXT.md está VACÍO: vale la pena sembrar
+    términos canónicos (Catálogo/GameCatalogItem, Embedding 384d, Mean pooling, Normalización
+    L2, Similitud coseno, Expectativa de búsqueda, Regresión semántica, Vectorización).
+    Estado del proyecto: Paso 1 de 8 cerrado; próximo es Paso 2 (scripts/download_model.py
+    + scripts/vectorize.py + dist/embeddings.json + tests/test_vectorize.py) — esperar
+    confirmación del usuario antes de arrancarlo. Cierre recomendado: ''closed'' (todos
+    los hooks pasaron, nada quedó a medias).'
+verification_results: []
+tasks: []
+closed_at: '2026-06-02T16:37:56.204390Z'
+end_commit: '0000000000000000000000000000000000000000'
+documenter_decision: closed
+session_note_path: C:\Parcial2Calidad-CICD\.cortex\vault\sessions\2026-06-02_paso-1-schema-spec-y-catalogo-inicial-buscador-semantico-de-videojuegos-con-cicd_paso-1-base-sdd-schema-spec-catalogo-y-validador.md
+adrs_created:
+- C:\Parcial2Calidad-CICD\.cortex\vault\decisions\ADR-001-arquitectura-100-estatica-con-modelo-onnx-dual-runtime-ci-browser.md

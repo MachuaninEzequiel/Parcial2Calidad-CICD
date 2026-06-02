@@ -1,0 +1,20 @@
+# Output del build (se regenera en cada corrida; nunca se commitea)
+dist/
+
+# Modelo ONNX (~22 MB): se descarga en CI o build local (Paso 2). Fuera de git.
+models/*.onnx
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# Sistema operativo / editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

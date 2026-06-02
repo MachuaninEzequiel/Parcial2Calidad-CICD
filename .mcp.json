@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "cortex": {
+      "type": "stdio",
+      "command": "cortex",
+      "args": [
+        "mcp-server",
+        "--stdio",
+        "--project-root",
+        "C:\\Parcial2Calidad-CICD"
+      ],
+      "env": {
+        "PYTHONWARNINGS": "ignore"
+      }
+    }
+  }
+}

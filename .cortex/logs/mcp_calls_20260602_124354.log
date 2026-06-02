@@ -1,0 +1,6 @@
+2026-06-02 12:43:54,921 - cortex.episodic.memory_store - INFO - EpisodicMemoryStore initialized — collection 'cortex_episodic' has 6 entries
+2026-06-02 12:43:54,923 - cortex.mcp.server - INFO - Cortex MCP Server inicializado. Log file: C:\Parcial2Calidad-CICD\.cortex\logs\mcp_calls_20260602_124354.log
+2026-06-02 12:43:54,933 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2026-06-02 12:43:54,947 - cortex.episodic.memory_store - INFO - EpisodicMemoryStore initialized — collection 'cortex_episodic' has 6 entries
+2026-06-02 12:43:54,948 - cortex.mcp.server - INFO - Cortex MCP Server inicializado. Log file: C:\Parcial2Calidad-CICD\.cortex\logs\mcp_calls_20260602_124354.log
+2026-06-02 12:43:54,974 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest

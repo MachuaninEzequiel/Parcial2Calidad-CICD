@@ -1,0 +1,84 @@
+# =============================================================================
+# SDD · Capa A — Schema estructural del ítem de catálogo
+# =============================================================================
+# Esta es la FUENTE DE VERDAD del proyecto. Define qué campos tiene cada juego
+# del catálogo y qué valores son válidos. Todo lo demás deriva de acá:
+#   - El validador (scripts/validate_catalog.py) chequea cada .md contra este schema.
+#   - El CI (Paso 6) corre check-jsonschema con este MISMO archivo.
+#   - El frontend (Paso 4) lee la lista de géneros de acá para armar los filtros.
+#
+# Regla SDD (Capa C): si querés un campo nuevo, lo agregás PRIMERO acá, después a
+# los .md, y recién después al frontend. Nunca al revés.
+# =============================================================================
+
+$schema: "http://json-schema.org/draft-07/schema#"
+title: GameCatalogItem
+type: object
+
+# additionalProperties: false → si alguien agrega un campo no declarado, el
+# pipeline falla. Esto fuerza que el schema y los .md estén siempre sincronizados.
+additionalProperties: false
+
+# Campos sin los cuales un juego no tiene sentido en el catálogo.
+required: [id, title, year, genres, summary]
+
+properties:
+  id:
+    type: string
+    # Slug único en kebab-case: minúsculas, números y guiones. Es el nombre del
+    # archivo (catalog/<id>.md) y la clave que usan las expectativas de búsqueda.
+    pattern: "^[a-z0-9-]+$"
+    description: "Slug único, kebab-case. Coincide con el nombre del archivo."
+
+  title:
+    type: string
+    minLength: 2
+    maxLength: 100
+    description: "Nombre del juego tal como se muestra."
+
+  year:
+    type: integer
+    minimum: 1970
+    maximum: 2030
+    description: "Año de lanzamiento."
+
+  genres:
+    type: array
+    minItems: 1
+    maxItems: 5
+    items:
+      type: string
+      # ESTA lista es la única fuente de verdad de géneros. No se duplica en
+      # ningún otro archivo: el frontend y los tests la consumen de acá.
+      enum:
+        - accion
+        - aventura
+        - rpg
+        - indie
+        - puzzle
+        - terror
+        - deportes
+        - estrategia
+        - simulacion
+        - plataformas
+        - shooter
+        - casual
+        - narrativo
+    description: "1 a 5 géneros, tomados del enum cerrado."
+
+  platforms:
+    type: array
+    # platforms NO está en 'required': un juego puede no declarar plataformas.
+    items:
+      type: string
+      enum: [pc, ps, xbox, switch, mobile]
+    description: "Plataformas donde está disponible. Enum cerrado."
+
+  summary:
+    type: string
+    # 80 chars mínimo fuerza sinopsis con sustancia (clave para que la
+    # vectorización del Paso 2 tenga texto rico que procesar). En los .md, el
+    # summary es el CUERPO del archivo, no un campo del frontmatter.
+    minLength: 80
+    maxLength: 1000
+    description: "Sinopsis rica en español. Es el texto que se vectoriza."
