@@ -2,16 +2,8 @@
 """Valida cada .md del catálogo contra schemas/game.schema.yaml.
 
 SDD · Capa A en acción: este script es el guardián estructural del catálogo.
-Lee el schema (la fuente de verdad), parsea el frontmatter YAML de cada juego,
-le inyecta el cuerpo del .md como campo ``summary`` y valida el objeto resultante
-contra el schema con la librería jsonschema (JSON Schema draft-07).
-
-Por qué inyectar el cuerpo como summary:
-    El formato de catálogo separa los metadatos (frontmatter) de la sinopsis
-    (el cuerpo en Markdown). El schema, en cambio, modela un único objeto con
-    todos los campos. Entonces, antes de validar, reconstruimos ese objeto:
-    ``{**frontmatter, "summary": <cuerpo del .md>}``. Es exactamente la misma
-    estructura que después consumen vectorize.py (Paso 2) y embeddings.json.
+Usa el parsing compartido de catalog_io (parse_game + load_schema) y valida el
+objeto resultante contra el schema con la librería jsonschema (draft-07).
 
 Por qué la librería jsonschema y no la CLI check-jsonschema:
     Para que cualquiera corra la validación local sin instalar binarios extra.
@@ -31,7 +23,7 @@ probar, de forma automatizable, que el validador efectivamente rechaza basura.
 import sys
 from pathlib import Path
 
-import yaml
+from catalog_io import CATALOG_DIR, load_schema, parse_game
 from jsonschema import Draft7Validator
 
 # Windows usa cp1252 en la consola por defecto y no puede imprimir los símbolos
@@ -41,45 +33,6 @@ if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 if hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8")
-
-# Rutas relativas a la raíz del repo (este script vive en scripts/).
-REPO_ROOT = Path(__file__).resolve().parent.parent
-SCHEMA_PATH = REPO_ROOT / "schemas" / "game.schema.yaml"
-CATALOG_DIR = REPO_ROOT / "catalog"
-
-FRONTMATTER_DELIM = "---"
-
-
-def load_schema():
-    """Carga el JSON Schema (escrito en YAML por legibilidad)."""
-    with SCHEMA_PATH.open(encoding="utf-8") as fh:
-        return yaml.safe_load(fh)
-
-
-def parse_game(md_path):
-    """Convierte un .md de catálogo en el objeto que describe el schema.
-
-    Separa el frontmatter YAML del cuerpo y reconstruye el objeto del juego
-    inyectando el cuerpo como ``summary``.
-    """
-    raw = md_path.read_text(encoding="utf-8")
-
-    if not raw.lstrip().startswith(FRONTMATTER_DELIM):
-        raise ValueError("falta el frontmatter YAML (no arranca con '---')")
-
-    # Partimos en ['', frontmatter, cuerpo...]. maxsplit=2 preserva cualquier
-    # '---' que aparezca dentro del cuerpo de la sinopsis.
-    _, frontmatter_block, *body_parts = raw.split(FRONTMATTER_DELIM, 2)
-
-    data = yaml.safe_load(frontmatter_block) or {}
-    if not isinstance(data, dict):
-        raise ValueError("el frontmatter no es un mapa YAML válido")
-
-    # El cuerpo del .md ES la sinopsis. Pisa cualquier summary del frontmatter:
-    # la única fuente de la sinopsis es el cuerpo del archivo.
-    body = body_parts[0].strip() if body_parts else ""
-    data["summary"] = body
-    return data
 
 
 def validate_file(validator, md_path):

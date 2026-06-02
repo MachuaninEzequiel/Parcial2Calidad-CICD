@@ -9,13 +9,16 @@ description = "Buscador semántico de videojuegos: catálogo en Markdown, embedd
 readme = "README.md"
 requires-python = ">=3.11"
 
-# Dependencias del Paso 1: SOLO lo necesario para validar el catálogo contra el
-# schema. En el Paso 2 se suman onnxruntime, numpy y tokenizers para vectorizar.
-# Mantener esto mínimo es una decisión consciente: no agregar dependencias que
-# no sean centrales (ver sección 11 del brief).
+# Dependencias de runtime. Paso 1: pyyaml + jsonschema (validación del catálogo).
+# Paso 2: numpy + onnxruntime + tokenizers + huggingface_hub (vectorización ONNX).
+# Se mantienen mínimas y centrales (sección 11 del brief): nada superfluo.
 dependencies = [
     "pyyaml>=6.0",
     "jsonschema>=4.18",
+    "numpy>=1.26",
+    "onnxruntime>=1.20",
+    "tokenizers>=0.20",
+    "huggingface_hub>=0.25",
 ]
 
 [project.optional-dependencies]

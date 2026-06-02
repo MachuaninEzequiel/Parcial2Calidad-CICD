@@ -1,0 +1,83 @@
+session_id: 2026-06-02_paso-2-script-de-vectorizacion-onnx-embeddingsjson
+spec_path: C:\Parcial2Calidad-CICD\.cortex\vault\specs\2026-06-02_paso-2-script-de-vectorizacion-onnx-embeddingsjson.md
+spec_summary: 'Implementar la vectorización del catálogo: bajar el modelo all-MiniLM-L6-v2
+  QUANTIZED int8 (~23 MB) + su tokenizer desde el repo Xenova/all-MiniLM-L6-v2, y
+  generar dist/embeddings.json con un vector de 384 dims normalizado L2 por juego,
+  vía mean pooling (con attention_mask) sobre la salida del modelo ONNX. La lógica
+  de pooling + L2 debe quedar documentada y ser trivialmente replicable en JS (Paso
+  4) para que los vectores sean comparables (premisa central, ver ADR-001). Reutilizar
+  el parsing del Paso 1 extrayéndolo a scripts/catalog_io.py compartido. Tests unitarios
+  de las funciones puras + validación de estructura del JSON. El modelo y el tokenizer
+  NO se commitean (gitignored).'
+start_commit: '0000000000000000000000000000000000000000'
+start_branch: ''
+opened_at: '2026-06-02T16:54:25.586283Z'
+status: closed
+mode: managed
+checkpoints:
+- timestamp: '2026-06-02T17:06:16.083650Z'
+  source: cortex-SDDwork
+  verified_claims:
+  - 'Paso 2 (Fast Track): 7 archivos. NUEVOS: scripts/catalog_io.py, scripts/download_model.py,
+    scripts/vectorize.py, tests/test_vectorize.py. EDITADOS: pyproject.toml (deps),
+    scripts/validate_catalog.py (ahora importa de catalog_io), PRESENTACION.md (fragmento
+    Paso 2).'
+  - 'Hook download-model VERIFICADO: baja models/model.onnx (22433 KB ≈ 22 MB, quantized
+    int8) + models/tokenizer.json (694 KB) de Xenova/all-MiniLM-L6-v2; idempotente,
+    exit 0.'
+  - 'Hook vectorize VERIFICADO: python scripts/vectorize.py genera dist/embeddings.json
+    con 10 items, cada uno con vector de 384 dims; exit 0.'
+  - 'Hook pytest-vectorize VERIFICADO: 4 passed (mean_pooling ignora padding por attention_mask;
+    l2_normalize da norma 1 y maneja vector cero; estructura del JSON: 10 items, 384
+    dims, norma ≈ 1 con tol 1e-5).'
+  - 'Hook validate-catalog-still-green VERIFICADO: el refactor a catalog_io.py NO
+    rompió el Paso 1 — validate_catalog.py da 10/10 (exit 0) y --expect-fail sigue
+    rechazando el malformado (exit 0).'
+  - 'Hook ruff-lint VERIFICADO: ruff check . → All checks passed; ruff format --check
+    . → OK. El auto-fix reordenó imports y modernizó datetime.now(UTC); re-corrí vectorize/validate/pytest
+    POST-fix y todo siguió verde.'
+  - 'DRY logrado: parse_game/load_schema viven solo en catalog_io.py; validate_catalog.py
+    y vectorize.py los importan.'
+  - 'Mismo archivo para CI y browser: el model_quantized.onnx + tokenizer.json bajados
+    son los que se servirán al browser en el Paso 4 (premisa de comparabilidad, ADR-001).'
+  unverified_claims:
+  - 'La equivalencia numérica Python↔JS (tolerancia 1e-5) NO se testó todavía: es
+    el Paso 4. mean_pooling()/l2_normalize() quedaron como funciones puras y autocontenidas
+    justamente para portarlas a JS.'
+  - vectorize.py maneja token_type_ids dinámicamente (chequea session.get_inputs());
+    no registré cuál de las dos ramas se ejecutó con este modelo puntual, pero ambas
+    producen vectores de 384 dims correctos (verificado por los tests).
+  - 'El vector se redondea a 8 decimales en el JSON: la norma se mantiene dentro de
+    1e-5 (verificado por el test), es un redondeo consciente para acotar el tamaño
+    del archivo.'
+  - 'git: el usuario hizo init+commit del Paso 1, pero la sesión registró start_commit=0000...0000.
+    El diff del documenter podría no anclar bien (briefing posiblemente gitless);
+    a vigilar al cierre.'
+  artifacts_touched:
+  - scripts/catalog_io.py
+  - scripts/download_model.py
+  - scripts/vectorize.py
+  - tests/test_vectorize.py
+  - pyproject.toml
+  - scripts/validate_catalog.py
+  - PRESENTACION.md
+  note: 'documenter: Paso 2 (vectorización ONNX) completo y verificado — los 5 hooks
+    en verde. Decisiones in-flight: (1) refactor DRY de parse_game/load_schema a scripts/catalog_io.py
+    (importado por validate_catalog y vectorize); (2) modelo = quantized int8 de Xenova
+    (~22 MB), el MISMO archivo para CI y browser → materializa ADR-001, NO amerita
+    ADR nuevo; (3) vectorize maneja token_type_ids dinámicamente según los inputs
+    del modelo; (4) silenciado warning de symlinks de huggingface_hub para una demo
+    limpia en Windows; (5) vector redondeado a 8 decimales. Posible ''decision'' menor
+    a registrar: quantized vs full (cubierta por ADR-001). OUTPUTS generados gitignored
+    (NO commitear): models/model.onnx, models/tokenizer.json, dist/embeddings.json.
+    OJO git: start_commit=0000 pese a haber .git — el briefing puede venir gitless;
+    si es así, apoyarse en checkpoints/diff. Próximo: Paso 3 (frontend mínimo site/
+    con búsqueda por substring, sin ONNX todavía) — esperar confirmación del usuario.
+    Cierre recomendado: ''closed''.'
+verification_results: []
+tasks: []
+closed_at: '2026-06-02T17:13:05.997235Z'
+end_commit: '0000000000000000000000000000000000000000'
+documenter_decision: closed
+session_note_path: C:\Parcial2Calidad-CICD\.cortex\vault\sessions\2026-06-02_paso-2-script-de-vectorizacion-onnx-embeddingsjson_paso-2-vectorizacion-onnx-catalogo-embeddingsjson.md
+adrs_created: []
