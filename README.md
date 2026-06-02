@@ -41,7 +41,7 @@ La pieza central: **el mismo `model.onnx` corre en dos lugares**. En el CI (con 
 |---|---|
 | Control de versiones | GitHub (`main` + feature branches + PRs) |
 | Servidor de Integración Continua | GitHub Actions ✅ — `.github/workflows/ci.yml` (Paso 6) |
-| Entorno del dev con build local | Docker + script de vectorización local *(Docker: Paso 7)* |
+| Entorno del dev con build local | Docker ✅ — `Dockerfile` + `docker/entrypoint.sh` (Paso 7) |
 | Prueba automatizada | pytest (unitarios + regresión semántica) + gate de equivalencia ✅ |
 | Build que despliega | Job de deploy en Actions → GitHub Pages *(CD: al final del proyecto)* |
 | Entornos de entrega | GitHub Pages (producción) |
@@ -60,7 +60,7 @@ La pieza central: **el mismo `model.onnx` corre en dos lugares**. En el CI (con 
 
 ---
 
-## Estado actual — Pasos 1-6 ✅
+## Estado actual — Pasos 1-7 ✅
 
 - **Paso 1 ✅ · base SDD:** schema, expectativas, catálogo inicial (10 juegos) y el validador.
 - **Paso 2 ✅ · vectorización ONNX:** `scripts/vectorize.py` recorre el catálogo, lo pasa por **all-MiniLM-L6-v2** (ONNX), aplica mean pooling + normalización L2 y genera `dist/embeddings.json` (10 items, vectores de 384 dimensiones).
@@ -70,6 +70,8 @@ La pieza central: **el mismo `model.onnx` corre en dos lugares**. En el CI (con 
 - **Paso 5 ✅ · regresión semántica + catálogo afinado:** el loop SDD se cierra. `tests/test_search_regression.py` lee `specs/search-expectations.yaml` **en runtime** y genera un test parametrizado por expectativa (Capa B → tests): vectoriza cada query reusando el `embed()` de `vectorize.py` **sin padding** (régimen browser, ADR-002), rankea contra `dist/embeddings.json` por coseno y exige que `must_include_any_of` caiga en el top-k. Para que el ranking sea bueno con el modelo chico de inglés, se afinó el **contenido del catálogo en español** (ADR-003) en vez de cambiar de modelo: ahora *"juego para jugar con amigos en el sillón"* devuelve **Overcooked 2 en el puesto #1** y *"souls-like para principiantes"* devuelve **Hollow Knight en el #1**, ambas reales. La demo de la línea 5 ya no es aspiracional. En el CI (Paso 6), estos tests corren como gate junto al resto.
 
 - **Paso 6 ✅ · Integración Continua (GitHub Actions):** `.github/workflows/ci.yml` corre en **cada push y cada PR** los MISMOS gates que probás localmente (ver más abajo). Es **solo CI**: la Entrega Continua (deploy a GitHub Pages) y el hosting del modelo en producción quedan para el final del proyecto; Docker es el Paso 7.
+
+- **Paso 7 ✅ · Docker (entorno de build reproducible):** un `Dockerfile` (Python + Node + deps) empaqueta TODO el pipeline en una imagen. `docker run` corre los mismos gates que el CI sin instalar nada en tu máquina — el clásico *"en mi máquina anda"* deja de ser un problema. El `docker/entrypoint.sh` tiene 3 subcomandos: `ci` (pipeline completo), `vectorize` y `serve` (sitio en `:8000`). Ver **"Correr todo en Docker"** más abajo. (Es el entorno de build local de la consigna; el deploy/CD sigue diferido al cierre.)
 
 > **Detalle clave de la equivalencia:** el catálogo (Paso 2) se vectoriza con el tokenizer pad-eando a 128 tokens; el navegador vectoriza la query **sin padding** (solo los tokens reales). Como el modelo es int8, el largo de secuencia afecta la cuantización, así que la referencia de Python (`scripts/emit_reference_vectors.py`) también vectoriza las queries **sin padding** para reproducir EXACTO lo que hace el browser. Con eso el diff cae de ~3e-2 a ~4e-8. El test de regresión del Paso 5 vectoriza la query con el MISMO régimen sin padding, así el ranking del gate coincide con el del navegador.
 
@@ -133,12 +135,37 @@ node --test tests/equivalence/embed.equiv.test.mjs   # diff < 1e-5 y ranking id�
 
 El modelo (~23 MB) se baja una vez y se **cachea** entre runs. El principio: *lo que valida tu máquina es exactamente lo que valida el servidor*. **Es solo CI** — el **deploy continuo (CD)** a GitHub Pages y el hosting del modelo en producción se resuelven al final del proyecto; **Docker** es el Paso 7. El badge de arriba refleja el último run (reemplazá `OWNER/REPO` por el path real al publicar).
 
+### Correr todo en Docker (Paso 7)
+
+Docker empaqueta el **entorno de build local** de la consigna: la misma imagen corre el pipeline igual que el CI, sin que instales Python, Node ni las dependencias en tu máquina.
+
+```bash
+# 1. Construir la imagen (instala deps + hornea el modelo + precomputa embeddings)
+docker build -t buscador-semantico .
+
+# 2. Correr el PIPELINE COMPLETO (paridad con GitHub Actions): ruff + validación +
+#    vectorización + pytest (regresión semántica) + tests JS + equivalencia
+docker run --rm buscador-semantico
+
+# 3. Solo vectorizar el catálogo, dejando el embeddings.json en tu host
+docker run --rm -v "$PWD/dist:/app/dist" buscador-semantico vectorize
+
+# 4. Servir el sitio en http://localhost:8000/site/
+docker run --rm -p 8000:8000 buscador-semantico serve
+```
+
+El subcomando por defecto es `ci` (el pipeline completo). El `docker/entrypoint.sh` **reusa los mismos scripts** que el CI y el dev local — no reimplementa nada. El modelo se hornea en el build (el lado Python anda offline), pero el **test de equivalencia** (Node/Transformers.js) y el **navegador** bajan el modelo del CDN en runtime, así que para esos hace falta red. **Es el entorno de build/dev**: el deploy a producción (CD) se resuelve al cierre del proyecto.
+
 ---
 
-## Estructura del repo (hasta el Paso 6)
+## Estructura del repo (hasta el Paso 7)
 
 ```
 .
+├── Dockerfile                    # entorno de build reproducible (Paso 7)
+├── .dockerignore                 # qué NO entra al build context
+├── docker/
+│   └── entrypoint.sh             # subcomandos del contenedor: ci | vectorize | serve
 ├── .github/
 │   └── workflows/
 │       └── ci.yml                # Integración Continua (Paso 6): corre todos los gates
@@ -180,4 +207,4 @@ El modelo (~23 MB) se baja una vez y se **cachea** entre runs. El principio: *lo
 └── README.md
 ```
 
-> **Próximos pasos:** **Docker** (Paso 7) y la **presentación oral** (Paso 8). El **deploy continuo (CD) a GitHub Pages** y el hosting del modelo en producción se dejan para el cierre del proyecto. El Paso 6 ya dejó andando la **Integración Continua** (`.github/workflows/ci.yml`).
+> **Próximos pasos:** la **presentación oral** (Paso 8) y, como cierre, el **deploy continuo (CD) a GitHub Pages** + el hosting del modelo en producción. Los Pasos 6 y 7 ya dejaron andando la **Integración Continua** (`.github/workflows/ci.yml`) y el **entorno de build reproducible** (`Dockerfile`).

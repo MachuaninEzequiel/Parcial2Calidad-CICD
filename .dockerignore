@@ -1,0 +1,33 @@
+# Lo que NO entra al build context (lo pesado/innecesario). El build los
+# regenera/instala/hornea adentro de la imagen:
+#   - models/  → lo baja download_model.py
+#   - dist/    → lo genera vectorize.py
+#   - node_modules/ → lo instala npm ci
+
+# Pesado / regenerable
+node_modules
+models
+dist
+.cache
+
+# Git y metadata de herramientas
+.git
+.gitignore
+.github
+.cortex
+.claude
+
+# Python
+.venv
+venv
+__pycache__
+*.py[cod]
+*.egg-info
+.ruff_cache
+.pytest_cache
+
+# Editores / SO
+.vscode
+.idea
+.DS_Store
+Thumbs.db

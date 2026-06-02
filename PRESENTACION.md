@@ -86,3 +86,17 @@ Hasta acá todo lo probábamos a mano en nuestra máquina. El Paso 6 le delega e
 El orden de los pasos no es decorativo, refleja las dependencias reales: no se puede correr la regresión semántica sin antes haber bajado el modelo y vectorizado el catálogo. El modelo pesa ~23 MB, así que lo **cacheamos** entre corridas para no re-descargarlo cada vez. Y una honestidad de ingeniería que conviene anticipar: el gate de equivalencia baja el modelo de un CDN público, así que el CI necesita red —si ese servicio se cayera, el job falla, y eso queda documentado como una dependencia conocida—.
 
 Una aclaración de alcance: el Paso 6 es **Integración Continua** (CI), todavía no Entrega Continua. La parte de **CD** —desplegar el sitio a GitHub Pages y resolver dónde vive el modelo en producción— la dejamos para el cierre del proyecto, para mostrarla toda junta y bien. Lo que ya queda blindado es lo más importante: ningún cambio entra a la rama principal sin pasar, automáticamente y en cada push, por la misma batería de pruebas que usamos los humanos.
+
+---
+
+## Fragmento · Paso 7 — Docker (entorno de build reproducible)
+
+**Qué mostrar:** el `Dockerfile` y el `docker/entrypoint.sh`; en la terminal, `docker build -t buscador-semantico .` y después `docker run --rm buscador-semantico` corriendo el pipeline completo; y opcionalmente `docker run -p 8000:8000 buscador-semantico serve` abriendo el sitio en `http://localhost:8000/site/`.
+
+**Qué decir (la idea central):**
+
+El Paso 6 puso el pipeline en un servidor; el Paso 7 lo mete en una caja portátil. Un `Dockerfile` arma una imagen con Python, Node y todas las dependencias ya instaladas, y hasta hornea el modelo adentro. ¿Para qué? Para matar de raíz el *"en mi máquina anda"*: cualquiera que tenga Docker corre `docker run` y obtiene **exactamente el mismo entorno** que el CI y que mi notebook, sin instalar una sola dependencia a mano. Eso es justo la fila *"entorno del dev con build local"* de la consigna de CI/CD: reproducibilidad de punta a punta.
+
+Lo hicimos con un detalle de diseño que nos importa: el contenedor **no reimplementa nada**. El `entrypoint.sh` simplemente llama a los mismos scripts que ya corren el CI y el dev local, ordenados por sus dependencias reales (bajar el modelo, vectorizar, después los tests). Tiene tres subcomandos para las tres cosas que uno quiere hacer: `ci` corre el pipeline completo —el mismo que GitHub Actions—, `vectorize` regenera los embeddings, y `serve` levanta el sitio en el puerto 8000 para verlo en el navegador. Una sola imagen, tres usos.
+
+Para cerrar y ser honestos con el alcance: el Paso 7 es el **entorno de build**, no el despliegue. El subcomando `serve` es para la demo local, no para producción. El **deploy continuo a GitHub Pages** y dónde vive el modelo cuando el sitio está publicado los dejamos para el cierre del proyecto, para mostrar toda la parte de Entrega Continua junta. Con Docker ya tenemos lo que la materia pide del lado del entorno: un build local reproducible, idéntico al del servidor.

@@ -1,0 +1,86 @@
+session_id: 2026-06-02_paso-7-docker-entorno-de-build-reproducible
+spec_path: C:\Parcial2Calidad-CICD\.cortex\vault\specs\2026-06-02_paso-7-docker-entorno-de-build-reproducible.md
+spec_summary: 'Empaquetar el entorno de build/dev del proyecto en una imagen Docker
+  — la fila ''Entorno del dev con build local'' de la consigna de CI/CD. Un Dockerfile
+  (Python 3.13 + Node 22 + las dependencias) que corre el MISMO pipeline que GitHub
+  Actions (download_model, ruff, validate_catalog, vectorize, pytest incl. regresión
+  semántica, check_site, tests JS incl. el gate de equivalencia Python↔JS) dentro
+  de un contenedor, sin instalar nada en la máquina del usuario, garantizando reproducibilidad
+  (''en mi máquina anda'' se acaba). Un entrypoint con subcomandos cubre las 3 necesidades:
+  `ci` (pipeline completo = paridad con el CI; default), `vectorize` (genera dist/embeddings.json
+  en un volumen) y `serve` (sirve el sitio estático local en :8000). El entrypoint
+  REUSA los scripts del repo tal cual (no reimplementa lógica). NO incluye el CD/deploy
+  a GitHub Pages ni el hosting del modelo en producción: eso queda EXPLÍCITAMENTE
+  para el cierre del proyecto. Español rioplatense, didáctico, para la defensa oral.'
+start_commit: '0000000000000000000000000000000000000000'
+start_branch: ''
+opened_at: '2026-06-02T21:38:17.363869Z'
+status: handoff
+mode: managed
+checkpoints:
+- timestamp: '2026-06-02T21:48:10.859644Z'
+  source: cortex-SDDwork
+  verified_claims:
+  - 'Fast Track. Creé 3 archivos: (1) Dockerfile — base python:3.13-slim, instala
+    Node 22 (NodeSource) y limpia apt; capa de deps cacheable (COPY pyproject+README+package*.json
+    → pip install -e .[dev] + npm ci) ANTES de COPY . .; hornea el modelo (download_model.py)
+    y precomputa embeddings (vectorize.py) en el build; ENTRYPOINT [''bash'',''docker/entrypoint.sh''],
+    CMD [''ci''], EXPOSE 8000. (2) docker/entrypoint.sh — set -euo pipefail + dispatch
+    por subcomando ci/vectorize/serve; el subcomando `ci` corre el pipeline en el
+    MISMO orden que .github/workflows/ci.yml (download_model→ruff→validate_catalog[+negative]→vectorize→pytest→check_site→node
+    search.test→node equivalence) y REUSA los scripts (no reimplementa). (3) .dockerignore
+    — excluye node_modules/models/dist/.git/.github/.cortex/.claude/.venv/__pycache__/caches.'
+  - 'Verificado lo que NO necesita daemon: hook required `docker-artifacts` = exit
+    0 (Dockerfile + .dockerignore + entrypoint con los 3 subcomandos presentes); `bash
+    -n docker/entrypoint.sh` = sintaxis válida. El pipeline que el contenedor ejecuta
+    son los mismos comandos ya probados verdes en Pasos 4-6.'
+  - 'Docs actualizadas: README — tabla de mapeo ''Entorno del dev con build local
+    = Docker ✅'', Estado → Pasos 1-7, bullet del Paso 7, nueva sección ''Correr todo
+    en Docker'' (build + run de los 3 subcomandos), estructura del repo con Dockerfile/.dockerignore/docker/,
+    ''Próximos pasos'' reescrito (queda Paso 8 + CD al cierre). PRESENTACION — fragmento
+    del Paso 7 (~3 párrafos, voseo) appendeado tras el del Paso 6.'
+  unverified_claims:
+  - 'CRÍTICO: `docker build` y `docker run` NO se pudieron validar en este entorno.
+    El engine Linux de Docker Desktop está inaccesible (npipe dockerDesktopLinuxEngine
+    no responde; `docker desktop start` dice ''already running'' pero `docker version`/`docker
+    info` del server fallan — WSL2/engine no inicializado). CONFIRMÉ que es el daemon,
+    no el Dockerfile (el error es de conexión al API, no de parseo). Los hooks optional
+    docker-build/docker-run-ci NO corrieron. Según el constraint de la spec (''si
+    el build de Docker no se pudo validar... cerrar como handoff''), esto inclina
+    el cierre a HANDOFF — decisión del documenter. El usuario debe validar `docker
+    build -t buscador-semantico .` + `docker run --rm buscador-semantico` con el engine
+    de Docker arriba.'
+  - 'No verificado por falta de build real: que existan wheels cp313 de onnxruntime/tokenizers
+    para la imagen slim, que `npm ci` instale onnxruntime-node en debian, y que el
+    script NodeSource setup_22.x ande. Son estándar y andan localmente, pero el build
+    en contenedor recién se confirma corriéndolo.'
+  - 'OBSERVACIÓN pre-existente (FUERA del scope de Paso 7, no la toqué): .gitignore
+    ignora solo `models/*.onnx`, así que `models/tokenizer.json` (~711KB) NO está
+    gitignored (el model.onnx de 22MB SÍ). Heads-up para cuando se commiteen los Pasos
+    4-7: conviene sumar `models/` o `models/tokenizer.json` al .gitignore. Es Capa
+    de config, ameritaría su propia spec si se quiere arreglar.'
+  artifacts_touched:
+  - Dockerfile
+  - docker/entrypoint.sh
+  - .dockerignore
+  - README.md
+  - PRESENTACION.md
+  note: 'documenter: Paso 7 (Fast Track) = Docker como entorno de build reproducible
+    (SOLO build/dev, sin CD, por la decisión del usuario que arrastra de Pasos 6).
+    Artefactos COMPLETOS y correctos por inspección: hook required docker-artifacts
+    verde, entrypoint con sintaxis bash válida, el pipeline interno = mismos comandos
+    ya verdes. PERO: NO pude validar `docker build`/`docker run` porque el engine
+    de Docker Desktop está caído en este entorno (confirmado que es el daemon, no
+    los archivos). El constraint de la spec dice EXPLÍCITAMENTE ''si el build no se
+    pudo validar, cerrar como handoff'' → recomiendo cerrar como **HANDOFF** (no closed):
+    el entregable está, pero el end-to-end del contenedor queda sin verificar. El
+    next_step del handoff: validar el build con el engine arriba + commitear Pasos
+    4-7. NO amerita ADR (dockerización estándar). Observación pre-existente a registrar:
+    models/tokenizer.json no está en .gitignore (solo *.onnx).'
+verification_results: []
+tasks: []
+closed_at: '2026-06-02T22:25:27.053193Z'
+end_commit: '0000000000000000000000000000000000000000'
+documenter_decision: handoff
+session_note_path: C:\Parcial2Calidad-CICD\.cortex\vault\handoffs\2026-06-02_handoff-paso-7-docker-build-sin-validar.md
+adrs_created: []
