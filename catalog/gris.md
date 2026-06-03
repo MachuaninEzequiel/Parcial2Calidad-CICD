@@ -2,8 +2,8 @@
 id: gris
 title: Gris
 year: 2018
-genres: [indie, plataformas, aventura]
+genres: [indie, platformer, adventure]
 platforms: [pc, switch, mobile]
 ---
 
-Gris es una aventura de plataformas contemplativa que narra, sin una sola palabra, el viaje de una joven a través del duelo y la pérdida. El mundo arranca en blanco y negro y, a medida que ella sana, el color va volviendo de a poco: cada etapa emocional pinta el escenario con una paleta nueva. La acuarela en movimiento, las animaciones pintadas a mano y la música delicada construyen una experiencia más cercana a un poema visual que a un desafío. No hay enemigos ni muertes; los obstáculos son suaves y el foco está puesto en la emoción y la belleza. Es corto, íntimo y profundamente conmovedor, una de esas obras breves que se sienten como un suspiro. Una historia silenciosa sobre seguir adelante cuando todo parece gris.
+Gris is a contemplative platforming adventure that tells, without a single word, the story of a young woman moving through grief and loss. The world begins in stark black and white and, as she heals, color seeps slowly back in: each emotional stage paints the scenery with a new palette. The flowing watercolor art, the hand-painted animations and the delicate music build an experience closer to a visual poem than to a challenge. There are no enemies and no deaths; the obstacles are gentle and the focus rests entirely on emotion and beauty. It is short, intimate and deeply moving, one of those brief works that feel like a held breath. A silent, emotional story about finding the strength to keep going when everything has turned gray.

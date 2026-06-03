@@ -1,0 +1,178 @@
+session_id: 2026-06-03_migrar-el-contenido-del-modelo-a-ingles
+spec_path: C:\Parcial2Calidad-CICD\.cortex\vault\specs\2026-06-03_migrar-el-contenido-del-modelo-a-ingles.md
+spec_summary: 'Alinear el IDIOMA DEL CONTENIDO al modelo de IA local (all-MiniLM-L6-v2,
+  que es de inglés) para que la búsqueda por texto libre funcione bien, manteniendo
+  el modelo chico de 23MB en vez de cambiar a uno multilingüe pesado. Diagnóstico
+  que lo motiva: con queries en español el modelo no discrimina (casi toda query devuelve
+  disco-elysium/gris); con queries en inglés ya mejora (''relaxing farming game''
+  → stardew-valley #1, que en español ni aparecía). Se migra a INGLÉS sólo lo que
+  impacta al modelo: las sinopsis de los 10 catalog/*.md, el enum de géneros del schema
+  (Capa A) + el campo genres de los .md, las 5 queries de search-expectations.yaml,
+  y el ejemplo/placeholder de búsqueda en index.html. Quedan en ESPAÑOL (no impactan
+  al modelo): README.md, PRESENTACION.md y el chrome de UI. Después se re-vectoriza,
+  se re-emite el fixture de equivalencia y se re-valida todo. El modelo, el pipeline
+  (vectorize/equivalencia), download_model.py, vectorizer.mjs y la arquitectura NO
+  cambian. Esta decisión amienda/supersede el ADR-003 (afinar el catálogo en español
+  sólo parcheaba 5 queries; el fix real es alinear el idioma del contenido al modelo).'
+start_commit: '0000000000000000000000000000000000000000'
+start_branch: ''
+opened_at: '2026-06-03T01:52:07.335276Z'
+status: closed
+mode: managed
+checkpoints:
+- timestamp: '2026-06-03T02:00:08.065678Z'
+  source: cortex-code-implementer
+  verified_claims:
+  - 'hook schema-english: exit 0 — enum de generos migrado a ingles (action/adventure/rpg/indie/puzzle/horror/sports/strategy/simulation/platformer/shooter/casual/narrative);
+    ''accion'' ausente, ''action''+''horror'' presentes'
+  - 'hook catalog-valid (python scripts/validate_catalog.py): exit 0 — los 10 .md
+    validan contra el schema nuevo (genres ingleses + sinopsis 80-1000)'
+  - 'hook semantic-regression (python -m pytest tests/ -q): exit 0 — 10 passed (5
+    expectativas inglesas + units del Paso 2)'
+  - 'hook equivalence (node --test tests/equivalence/embed.equiv.test.mjs): exit 0
+    — 7 pass; peor max|diff| = 4.470e-8 << tolerancia 1e-5; ranking top-k identico
+    tras re-vectorizar y re-emitir el fixture'
+  - 'hook js-pure-functions (node --test site/js/search.test.mjs): exit 0 — 10 pass;
+    search.mjs sigue puro (NO se toco)'
+  - 'hook site-structure (python scripts/check_site.py): exit 0 — embeddings.json
+    10 items x 384 dims, input habilitado, importmap presente'
+  - 'hook ruff-lint (ruff check .): exit 0 — All checks passed'
+  - dist/embeddings.json regenerado (10x384) via python scripts/vectorize.py exit
+    0; tests/fixtures/query-vectors.reference.json re-emitido via emit_reference_vectors.py
+    exit 0
+  - 'Las 5 expectativas inglesas entran fuerte: ''souls-like for beginners''->hollow-knight
+    #1; ''couch co-op game to play with friends''->overcooked-2 #1; ''short emotional
+    indie game with a story''->celeste #1 (gris/firewatch en top5); ''rpg with choices
+    that matter''->witcher-3 #1 + disco-elysium #2; ''very hard platformer''->hollow-knight
+    #1 + celeste #2'
+  - 'Calidad real (queries arbitrarias en ingles, sin padding, top-3): ''relaxing
+    farming game''->stardew-valley(0.466), witcher-3(0.289), hollow-knight(0.257);
+    ''open world medieval rpg''->witcher-3(0.419), hollow-knight(0.408), disco-elysium(0.347);
+    ''horror game''->witcher-3(0.437), hades(0.408), hollow-knight(0.362); ''competitive
+    multiplayer shooter''->overcooked-2(0.359), disco-elysium(0.288), hollow-knight(0.250)'
+  - 'git status: solo los 16 files_in_scope tocados (15 tracked + dist/embeddings.json
+    gitignored); NO se toco modelo, vectorize.py, download_model.py, vectorizer.mjs,
+    search.mjs ni app.mjs (sin example query en app.mjs, grep exit 1)'
+  unverified_claims:
+  - '''horror game'' y ''competitive multiplayer shooter'' no tienen un match ideal
+    en el catalogo: el enum tiene ''horror''/''shooter'' pero ningun .md usa esos
+    generos (no hay juego de terror ni shooter en los 10). Los resultados son los
+    semanticamente mas cercanos disponibles, razonables, pero no hay un ground-truth
+    fuerte para esas dos categorias'
+  - No se midio rendimiento de vectorizacion ni tamano del modelo (sin cambios; fuera
+    de alcance)
+  - La calidad de la prosa inglesa de las sinopsis es juicio editorial mio; natural
+    y distintiva pero no revisada por hablante nativo
+  artifacts_touched:
+  - schemas/game.schema.yaml
+  - catalog/celeste.md
+  - catalog/disco-elysium.md
+  - catalog/firewatch.md
+  - catalog/gris.md
+  - catalog/hades.md
+  - catalog/hollow-knight.md
+  - catalog/journey.md
+  - catalog/overcooked-2.md
+  - catalog/stardew-valley.md
+  - catalog/witcher-3.md
+  - specs/search-expectations.yaml
+  - site/index.html
+  - dist/embeddings.json
+  - tests/fixtures/query-vectors.reference.json
+  - README.md
+  - PRESENTACION.md
+  note: 'documenter: TODO verde, los 7 hooks exit 0 (incluida la equivalence con diff
+    4.470e-8). Esta sesion AMIENDA/SUPERSEDE el ADR-003: de ''afinar el catalogo en
+    espanol (parcheaba solo 5 queries)'' al fix real ''alinear el idioma del CONTENIDO
+    al modelo = ingles, SIN cambiar el modelo''. Candidato a ADR nuevo (cumple los
+    3 criterios: (1) hard-to-reverse: el catalogo entero y las expectativas quedan
+    en ingles, revertir es reescribir 10 sinopsis; (2) surprising: el fix de calidad
+    de busqueda NO fue tocar el modelo sino traducir los datos; (3) trade-off: contenido
+    en ingles vs UI/docs en espanol -> coherencia del modelo a costa de mezclar idiomas
+    en el repo; alternativa descartada = modelo multilingue pesado que rompia ADR-001
+    + presupuesto de descarga + equivalencia). Decisiones tecnicas a registrar: (a)
+    solo migra a ingles lo que el modelo LEE (sinopsis + enum genres + queries + placeholder
+    de la caja); README/PRESENTACION/chrome de UI quedan en espanol (defensa oral
+    en espanol). (b) Cambio ATOMICO de Capa A: enum del schema + campo genres de los
+    10 .md editados juntos (additionalProperties:false). (c) hollow-knight y overcooked-2
+    conservan en ingles el angulo que el ADR-003 habia afinado (souls-like accesible
+    / couch co-op). (d) Mejora estrella verificada: ''relaxing farming game''->stardew-valley
+    #1, que en espanol ni aparecia. Deuda/limitacion a documentar: el enum tiene ''horror''
+    y ''shooter'' pero NINGUN juego del catalogo los usa -> queries de terror/shooter
+    no tienen ground-truth fuerte (caen en los juegos mas oscuros/multiplayer disponibles).
+    NO commitee nada (el usuario controla commits); dist/embeddings.json + reference
+    fixture regenerados pero gitignored/local.'
+- timestamp: '2026-06-03T02:02:14.192605Z'
+  source: cortex-SDDwork
+  verified_claims:
+  - 'Deep Track (una delegación a cortex-code-implementer; explorer/designer cubiertos
+    por SDDwork). RE-VERIFIQUÉ los gates críticos yo mismo: schema-english (enum 100%
+    inglés: action/adventure/rpg/indie/puzzle/horror/sports/strategy/simulation/platformer/shooter/casual/narrative);
+    validate_catalog.py = exit 0 (10/10); pytest tests/ = 10 passed; equivalence node
+    --test = exit 0, 7/7, max|diff| 4.47e-8 (sigue verde tras re-emitir el fixture).
+    review_checkpoint del implementer = accepted.'
+  - 'Las 5 expectativas (ahora en inglés) pasan fuerte: ''souls-like for beginners''→hollow-knight
+    #1; ''couch co-op game to play with friends''→overcooked-2 #1; ''short emotional
+    indie game with a story''→celeste #1; ''rpg with choices that matter''→witcher-3
+    #1; ''very hard platformer''→hollow-knight #1.'
+  - 'Calidad real MEJORADA (queries arbitrarias en inglés): ''relaxing farming game''→stardew-valley
+    #1 (0.466) — en español ni aparecía; ''open world medieval rpg''→witcher-3 #1.
+    Ya NO colapsa todo en disco-elysium/gris como pasaba en español.'
+  - 'search-expectations.yaml NO debilitada: git diff muestra que SOLO cambió el texto
+    de las 5 queries (español→inglés); los must_include_any_of (ids) y los in_top_k
+    intactos. Sinopsis en inglés natural y rico (leí stardew-valley: lidera con ''relaxing
+    farming simulator''), todas dentro de 80-1000 chars (707-944).'
+  - 'Capa A atómica OK: enum de géneros del schema traducido + campo genres de los
+    10 .md coherente (validate_catalog verde). El modelo, vectorize.py, download_model.py,
+    vectorizer.mjs, search.mjs y app.mjs NO se tocaron. README/PRESENTACION quedan
+    en español con demo phrases en inglés + el párrafo de la decisión de idioma.'
+  unverified_claims:
+  - 'EDGE honesto: el enum tiene ''horror'' y ''shooter'' pero NINGÚN juego del catálogo
+    los usa (no hay un juego de terror ni un shooter entre los 10), así que ''horror
+    game'' / ''competitive multiplayer shooter'' devuelven el más cercano disponible
+    sin ground-truth fuerte. NO es regresión (ninguna expectativa depende de esas
+    categorías). Mejora futura opcional: sumar juegos de esos géneros.'
+  - 'Comportamiento en browser REAL no testeado (no hay navegador), pero el wiring
+    del browser NO cambió (search.mjs/vectorizer.mjs/app.mjs intactos): solo cambió
+    el CONTENIDO (catálogo/queries/UI-ejemplo) + el enum.'
+  - Esta migración AMIENDA/SUPERSEDE el ADR-003 ('afinar el catálogo en español' →
+    'alinear el idioma del contenido al modelo = inglés'); el documenter debe registrar
+    el ADR nuevo (supersedes ADR-003) al cierre.
+  artifacts_touched:
+  - schemas/game.schema.yaml
+  - catalog/celeste.md
+  - catalog/disco-elysium.md
+  - catalog/firewatch.md
+  - catalog/gris.md
+  - catalog/hades.md
+  - catalog/hollow-knight.md
+  - catalog/journey.md
+  - catalog/overcooked-2.md
+  - catalog/stardew-valley.md
+  - catalog/witcher-3.md
+  - specs/search-expectations.yaml
+  - site/index.html
+  - dist/embeddings.json
+  - tests/fixtures/query-vectors.reference.json
+  - README.md
+  - PRESENTACION.md
+  note: 'documenter: migración a inglés del contenido que impacta al modelo, COMPLETA
+    y los 7 hooks en verde (re-verifiqué schema-english+validate_catalog+pytest+equivalence
+    yo mismo). Cerrable como CLOSED. LO PRINCIPAL DEL CIERRE: esto AMIENDA/SUPERSEDE
+    el ADR-003 → registrar un ADR nuevo (''alinear el idioma del contenido al modelo
+    (inglés) en vez de cambiar el modelo o forzar español; supersedes ADR-003''),
+    que cumple los 3 criterios (hard-to-reverse: re-traducir todo; surprising: contraintuitivo
+    migrar el contenido y no el modelo; trade-off: app en inglés vs modelo multilingüe
+    pesado). Decisiones in-flight: enum de Capa A traducido atómicamente con los .md;
+    UI mixta (chrome español + contenido/ejemplo inglés, decidido por el usuario).
+    Edge honesto: horror/shooter en el enum sin juego que los use. La búsqueda libre
+    ahora SÍ tiene sentido (stardew-valley para ''relaxing farming'', etc.). Pendiente
+    del usuario: commitear (el repo está en GitHub; el gitless de Cortex es falso-negativo).'
+verification_results: []
+tasks: []
+closed_at: '2026-06-03T02:08:23.242076Z'
+end_commit: '0000000000000000000000000000000000000000'
+documenter_decision: closed
+session_note_path: C:\Parcial2Calidad-CICD\.cortex\vault\sessions\2026-06-03_migrar-el-contenido-del-modelo-a-ingles_cierre-migracion-del-contenido-a-ingles.md
+adrs_created:
+- C:\Parcial2Calidad-CICD\.cortex\vault\decisions\ADR-004-alinear-el-idioma-del-contenido-al-modelo-ingles-en-vez-de-cambiar-el-modelo.md

@@ -51,19 +51,25 @@ properties:
       # ESTA lista es la única fuente de verdad de géneros. No se duplica en
       # ningún otro archivo: el frontend y los tests la consumen de acá.
       enum:
-        - accion
-        - aventura
+        - action
+        - adventure
         - rpg
         - indie
         - puzzle
-        - terror
-        - deportes
-        - estrategia
-        - simulacion
-        - plataformas
+        - horror
+        - sports
+        - strategy
+        - simulation
+        - platformer
         - shooter
         - casual
-        - narrativo
+        - narrative
+        - moba
+        - racing
+        - battle-royale
+        - fighting
+        - sandbox
+        - party
     description: "1 a 5 géneros, tomados del enum cerrado."
 
   platforms:
@@ -81,4 +87,4 @@ properties:
     # summary es el CUERPO del archivo, no un campo del frontmatter.
     minLength: 80
     maxLength: 1000
-    description: "Sinopsis rica en español. Es el texto que se vectoriza."
+    description: "Rich English synopsis. This is the text that gets vectorized."

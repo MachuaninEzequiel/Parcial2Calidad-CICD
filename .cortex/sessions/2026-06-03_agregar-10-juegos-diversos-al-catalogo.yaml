@@ -1,0 +1,187 @@
+session_id: 2026-06-03_agregar-10-juegos-diversos-al-catalogo
+spec_path: C:\Parcial2Calidad-CICD\.cortex\vault\specs\2026-06-03_agregar-10-juegos-diversos-al-catalogo.md
+spec_summary: 'Enriquecer el catálogo agregando 10 juegos de categorías MUY distintas
+  a las actuales (hoy son 10 indies single-player; faltan shooter, terror, moba, racing,
+  fighting, battle-royale, party, co-op), para que la búsqueda semántica tenga variedad
+  real. El catálogo pasa de 10 a 20. Contenido en INGLÉS (ADR-004: el modelo all-MiniLM-L6-v2
+  lee inglés). Implica: (a) EXTENDER el enum de géneros del schema (Capa A) con 6
+  valores nuevos (moba, racing, battle-royale, fighting, sandbox, party); (b) crear
+  10 catalog/<id>.md nuevos con frontmatter válido y sinopsis inglesas ricas y distintivas
+  (80-1000 chars), usando búsqueda web para datos exactos (año, géneros, detalles);
+  (c) sumar expectativas a search-expectations.yaml (Capa B) para las categorías nuevas;
+  (d) actualizar los 2 tests con count hardcodeado (10→20: tests/test_vectorize.py
+  y site/js/search.test.mjs); (e) re-vectorizar (embeddings.json→20 items), re-emitir
+  el fixture de equivalencia y re-validar TODO. El modelo, el pipeline, download_model.py,
+  vectorizer.mjs, search.mjs y la arquitectura NO cambian. El frontend renderea catálogo
+  y géneros desde los datos, así que muestra los 20 solo. Los 10 juegos: counter-strike-2,
+  league-of-legends, rocket-league, among-us, fortnite, street-fighter-6, minecraft,
+  resident-evil-4, it-takes-two, mario-kart-8-deluxe.'
+start_commit: '0000000000000000000000000000000000000000'
+start_branch: ''
+opened_at: '2026-06-03T02:17:42.033975Z'
+status: closed
+mode: managed
+checkpoints:
+- timestamp: '2026-06-03T02:27:50.413130Z'
+  source: cortex-code-implementer
+  verified_claims:
+  - 'catalog-20-and-genres hook exit 0: hay 20 catalog/*.md y el enum del schema tiene
+    los 6 generos nuevos (moba, racing, battle-royale, fighting, sandbox, party) +
+    los 13 existentes'
+  - 'catalog-valid (validate_catalog.py) exit 0: los 20 .md validan contra el schema;
+    sinopsis nuevas 813-980 chars (dentro de 80-1000)'
+  - 'semantic-regression (pytest tests/ -q) exit 0: 20 passed. Las 15 expectativas
+    (5 viejas + 10 nuevas) PASAN, ninguna skipped/failed. Verificado con -v: souls-like,
+    couch co-op, short emotional indie, rpg with choices, very hard platformer (las
+    5 VIEJAS) siguen verdes con 20 juegos'
+  - 'equivalence (node --test embed.equiv.test.mjs) exit 0: 17 subtests pass, peor
+    max|diff| = 5.96e-8 << 1e-5, ranking top-k identico Python<->JS para las 16 queries'
+  - 'js-pure-functions (node --test search.test.mjs) exit 0: 10 pass, el test condicional
+    de embeddings.json valida 20 items'
+  - 'site-structure (check_site.py) exit 0: embeddings.json 20 items, 384 dims, sitio
+    coherente'
+  - ruff check . exit 0 (All checks passed)
+  - 'dist/embeddings.json regenerado: 20 items x 384 dims. tests/fixtures/query-vectors.reference.json
+    re-emitido: 16 queries (15 expectativas + control ''hola'')'
+  - 'Top-3 quality queries (browser regime, sin padding) contra embeddings.json final:
+    ''competitive shooter''->counter-strike-2(0.583); ''party game with friends''->among-us(0.397);
+    ''kart racing''->mario-kart-8-deluxe(0.667); ''survival horror''->resident-evil-4(0.417);
+    ''sandbox building''->minecraft(0.634). Discriminan limpio, cada esperado #1'
+  - 'Tuning aplicado a catalog/street-fighter-6.md: la sinopsis original dejaba a
+    SF6 #4 en ''fighting game'' (pasaba pero borderline). Reforzada la identidad literal
+    ''fighting game / fight / fighter'' -> ahora #2 (0.459). NO se relajo ninguna
+    expectativa (constraint del spec cumplido)'
+  unverified_claims:
+  - 'La query aislada ''moba'' (token suelto) deja a league-of-legends solo #3 (disco-elysium
+    #1) - el modelo chico no reconoce bien el acronimo suelto. NO afecta el gate:
+    la expectativa real es ''moba with ranked matches'' que pone LoL #1. Es solo una
+    probe arbitraria.'
+  - 'La probe arbitraria ''fighting game tournament'' deja a street-fighter-6 #4 (pierde
+    contra el cluster competitive/tournament de cs2/lol/fortnite). NO es expectativa
+    del spec; la expectativa ''fighting game'' tiene a SF6 #2.'
+  - No corri el sitio en un navegador real ni Docker; la equivalencia se valido via
+    node:test (Transformers.js) que es el mismo motor del browser, pero no es una
+    prueba end-to-end de UI.
+  - Los anios/plataformas de los 10 juegos vienen de los datos provistos por el usuario
+    (no tengo WebSearch); asumidos correctos.
+  artifacts_touched:
+  - schemas/game.schema.yaml
+  - catalog/counter-strike-2.md
+  - catalog/league-of-legends.md
+  - catalog/rocket-league.md
+  - catalog/among-us.md
+  - catalog/fortnite.md
+  - catalog/street-fighter-6.md
+  - catalog/minecraft.md
+  - catalog/resident-evil-4.md
+  - catalog/it-takes-two.md
+  - catalog/mario-kart-8-deluxe.md
+  - specs/search-expectations.yaml
+  - tests/test_vectorize.py
+  - site/js/search.test.mjs
+  - dist/embeddings.json
+  - tests/fixtures/query-vectors.reference.json
+  - README.md
+  - PRESENTACION.md
+  note: 'documenter: Feature completa, los 7 hooks exit 0. PUNTOS PARA EL DOC:\n\n1)
+    CATALOGO 10->20: enum del schema extendido (Capa A) con 6 generos (moba, racing,
+    battle-royale, fighting, sandbox, party). 10 sinopsis nuevas en INGLES (ADR-004),
+    distintivas por modo (competitivo/online/party/co-op/survival horror). 10 expectativas
+    nuevas en search-expectations.yaml. README+PRESENTACION actualizados a 20 (en
+    espanol).\n\n2) TUNING DE CONTENIDO (no relajacion): street-fighter-6 quedaba
+    #4 en ''fighting game'' (pasaba pero borderline por el cluster competitivo cs2/lol/fortnite).
+    Reforce la sinopsis con lenguaje literal de fighting -> #2. Cumple el constraint
+    del spec ''afinar la sinopsis, no debilitar la expectativa''. NO candidato a ADR
+    (reversible, esperado).\n\n3) HALLAZGO IMPORTANTE / DEUDA PREEXISTENTE (no causada
+    por mi, FUERA de mi scope): el working tree tiene 10 catalog/*.md EXISTENTES (celeste,
+    disco-elysium, firewatch, gris, hades, hollow-knight, journey, overcooked-2, stardew-valley,
+    witcher-3) MODIFICADOS sin commitear: es la migracion espanol->ingles del Paso
+    5 + rename de genero ''plataformas''->''platformer''. El HEAD commiteado (9f32ef7)
+    todavia tiene el catalogo viejo en ESPANOL con genero ''plataformas'' (que NI
+    SIQUIERA esta en el enum del schema). O sea: si alguien re-clona y commitea el
+    HEAD actual, validate_catalog FALLARIA por ''plataformas''. Esta deuda hay que
+    cerrarla commiteando la migracion Paso 5 + el Paso 4 actual juntos. NO commitee
+    nada (instruccion del usuario). El branch es master directo.\n\n4) Las 5 expectativas
+    VIEJAS sobrevivieron el salto a 20 (verificado con pytest -v). Ningun juego nuevo
+    empujo a un esperado fuera del top-5.\n\nPosible decision a documentar (no ADR,
+    mas bien nota de sesion): el patron ''extender enum Capa A + contenido Capa C
+    + 2 counts de test'' es el flujo SDD canonico para crecer el catalogo; quedo demostrado
+    que escala sin tocar modelo/pipeline.'
+- timestamp: '2026-06-03T02:30:14.800699Z'
+  source: cortex-SDDwork
+  verified_claims:
+  - 'Deep Track (delegación a cortex-code-implementer; el implementer no tiene WebSearch,
+    le pasé la ficha de datos de los 10 juegos). RE-VERIFIQUÉ yo mismo: 20 catalog/*.md;
+    validate_catalog exit 0 (20/20); pytest tests/ = 20 passed (5 expectativas viejas
+    + ~10 nuevas + units, con el unit test de estructura ya a 20); review_checkpoint
+    = accepted.'
+  - 'Catálogo de 10→20. Schema enum extendido con 6 géneros (moba, racing, battle-royale,
+    fighting, sandbox, party) + los 13 previos. Los 10 nuevos (counter-strike-2, league-of-legends,
+    rocket-league, among-us, fortnite, street-fighter-6, minecraft, resident-evil-4,
+    it-takes-two, mario-kart-8-deluxe) con frontmatter válido y sinopsis inglesas
+    ricas/distintivas (leí counter-strike-2: excelente). Los 2 counts hardcodeados
+    pasados a 20 (test_vectorize.py, search.test.mjs).'
+  - 'Las nuevas categorías discriminan limpio (queries de prueba, top-1): ''competitive
+    shooter''→counter-strike-2 (0.583); ''kart racing''→mario-kart-8-deluxe (0.667);
+    ''survival horror''→resident-evil-4 (0.417); ''sandbox building''→minecraft (0.634);
+    ''party game with friends''→among-us (0.397). Las 5 expectativas VIEJAS siguen
+    pasando con 20 juegos (ningún juego nuevo empujó al esperado fuera del top-5).'
+  - 'Equivalencia Python↔JS sigue verde: node --test = exit 0, 17/17 (16 queries del
+    fixture + summary), peor diff 5.96e-8 ≪ 1e-5. Fixture re-emitido + embeddings.json
+    re-vectorizado (20×384). Modelo/pipeline/vectorizer.mjs/search.mjs/app.mjs NO
+    tocados (sin scope drift; los 10 .md originales NO se tocaron en esta sesión).'
+  unverified_claims:
+  - 'AMARILLO (no rojo): la probe ''moba'' (token suelto) deja a League of Legends
+    #3 — el modelo chico no reconoce bien el acrónimo aislado. NO afecta el gate:
+    la expectativa real ''moba with ranked matches'' pone LoL #1 y pasa. El implementer
+    reforzó la identidad ''fighting'' de street-fighter-6 (estaba #4 borderline en
+    ''fighting game'') → #2, SIN debilitar ninguna expectativa.'
+  - 'GIT — contexto crítico para el commit/deploy: hay un DELTA ENORME sin commitear
+    que abarca DOS sesiones: (1) la migración a inglés (sesión previa, NUNCA commiteada:
+    los 10 .md originales pasados a inglés + schema enum inglés + plataformas→platformer
+    + tests + docs) y (2) estos 10 juegos nuevos. Son INTERDEPENDIENTES (todo usa
+    el enum inglés+extendido) → hay que commitearlos JUNTOS. El HEAD commiteado (9f32ef7)
+    está internamente consistente EN ESPAÑOL (schema español + catálogo español →
+    validaría OK), así que NO está roto; PERO la versión DESPLEGADA/live sigue en
+    español hasta que el usuario commitee+pushee. Esto explica por qué el usuario
+    vio ''la búsqueda no tiene sentido'' al probar la web: estaba probando la versión
+    española deployada.'
+  - Comportamiento en browser real no testeado (no hay navegador); el wiring no cambió,
+    solo contenido + enum + 2 counts de test.
+  artifacts_touched:
+  - schemas/game.schema.yaml
+  - catalog/counter-strike-2.md
+  - catalog/league-of-legends.md
+  - catalog/rocket-league.md
+  - catalog/among-us.md
+  - catalog/fortnite.md
+  - catalog/street-fighter-6.md
+  - catalog/minecraft.md
+  - catalog/resident-evil-4.md
+  - catalog/it-takes-two.md
+  - catalog/mario-kart-8-deluxe.md
+  - specs/search-expectations.yaml
+  - tests/test_vectorize.py
+  - site/js/search.test.mjs
+  - dist/embeddings.json
+  - tests/fixtures/query-vectors.reference.json
+  - README.md
+  - PRESENTACION.md
+  note: 'documenter: catálogo expandido 10→20 con categorías diversas (competitivo/moba/battle-royale/fighting/racing/party/sandbox/horror/co-op),
+    los 7 hooks en verde (re-verifiqué validate_catalog+pytest+count yo mismo). Cerrable
+    como CLOSED. NO amerita ADR (evolución SDD: Capa C + extensión aditiva del enum
+    Capa A; la decisión de idioma ya está en ADR-004). Posible decision menor inline:
+    ''multiplayer/co-op viven en las sinopsis, no como géneros del enum''. PENDIENTE
+    OPERATIVO CRÍTICO para el usuario: el working tree tiene un delta sin commitear
+    de DOS sesiones (migración a inglés NUNCA commiteada + estos 10 juegos), interdependientes
+    → commitear JUNTOS. El HEAD (9f32ef7) sigue en español y consistente (no roto),
+    pero la web deployada sigue en español hasta el commit+push. Edge: el enum ahora
+    tiene horror/shooter/etc. usados por los juegos nuevos (ya no hay géneros huérfanos
+    como antes). ''moba'' token suelto no rankea perfecto (limitación del modelo chico)."'
+verification_results: []
+tasks: []
+closed_at: '2026-06-03T02:36:39.406083Z'
+end_commit: '0000000000000000000000000000000000000000'
+documenter_decision: closed
+session_note_path: C:\Parcial2Calidad-CICD\.cortex\vault\sessions\2026-06-03_agregar-10-juegos-diversos-al-catalogo_cierre-catalogo-1020-juegos-diversos.md
+adrs_created: []

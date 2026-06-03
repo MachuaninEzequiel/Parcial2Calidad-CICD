@@ -9,29 +9,77 @@
 # juego nuevo y eso degrada el ranking de una query que antes andaba bien, el
 # CI me avisa.
 #
+# IDIOMA: las queries están en INGLÉS porque el modelo (all-MiniLM-L6-v2) es de
+# inglés y discrimina mucho mejor con contenido inglés (decisión que amienda el
+# ADR-003: alinear el idioma del contenido al modelo en vez de cambiar el modelo).
+#
 # REGLA: cada id en must_include_any_of DEBE existir como catalog/<id>.md.
 # =============================================================================
 
 expectations:
-  - query: "souls-like para principiantes"
+  - query: "souls-like for beginners"
     # "souls-like" aparece literal en el summary de hollow-knight, pero la idea
     # es que el modelo entienda el ESTILO, no que haga match de palabras.
     must_include_any_of: [hollow-knight]
     in_top_k: 5
 
-  - query: "juego para jugar con amigos en el sillón"
+  - query: "couch co-op game to play with friends"
     must_include_any_of: [overcooked-2]
     in_top_k: 5
 
-  - query: "indie corto y emotivo con historia"
+  - query: "short emotional indie game with a story"
     must_include_any_of: [gris, journey, celeste, firewatch]
     in_top_k: 5
 
-  - query: "rpg con elecciones que importan"
+  - query: "rpg with choices that matter"
     must_include_any_of: [disco-elysium, witcher-3]
     in_top_k: 5
 
-  - query: "plataformas con dificultad muy alta"
-    # Ni celeste ni hollow-knight dicen "dificultad muy alta": el match es semántico.
+  - query: "very hard platformer"
+    # Ni celeste ni hollow-knight dicen "very hard platformer": el match es semántico.
     must_include_any_of: [celeste, hollow-knight]
+    in_top_k: 5
+
+  # --- Categorías nuevas (catálogo de 20 juegos) -----------------------------
+  # Una expectativa por familia que sumamos: shooter competitivo, moba, battle
+  # royale, fighting, terror, party online, kart racing y co-op de dos jugadores.
+
+  - query: "competitive tactical shooter"
+    must_include_any_of: [counter-strike-2]
+    in_top_k: 5
+
+  - query: "moba with ranked matches"
+    must_include_any_of: [league-of-legends]
+    in_top_k: 5
+
+  - query: "battle royale"
+    must_include_any_of: [fortnite]
+    in_top_k: 5
+
+  - query: "fighting game"
+    must_include_any_of: [street-fighter-6]
+    in_top_k: 5
+
+  - query: "survival horror"
+    must_include_any_of: [resident-evil-4]
+    in_top_k: 5
+
+  - query: "party game to play online with friends"
+    must_include_any_of: [among-us]
+    in_top_k: 5
+
+  - query: "kart racing"
+    must_include_any_of: [mario-kart-8-deluxe]
+    in_top_k: 5
+
+  - query: "two player co-op adventure"
+    must_include_any_of: [it-takes-two]
+    in_top_k: 5
+
+  - query: "sandbox to build and craft"
+    must_include_any_of: [minecraft]
+    in_top_k: 5
+
+  - query: "soccer with cars"
+    must_include_any_of: [rocket-league]
     in_top_k: 5

@@ -104,7 +104,7 @@ test("embeddings.json: contrato y auto-similitud (condicional si existe)", (t) =
 
   const data = JSON.parse(readFileSync(embeddingsPath, "utf8"));
   assert.equal(data.dimensions, 384, "dimensions debe ser 384");
-  assert.equal(data.items.length, 10, "el catálogo tiene 10 juegos");
+  assert.equal(data.items.length, 20, "el catálogo tiene 20 juegos");
   assert.equal(
     data.items[0].vector.length,
     384,

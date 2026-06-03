@@ -46,7 +46,7 @@ def test_l2_normalize_vector_cero_no_explota():
 def test_estructura_embeddings_json():
     data = json.loads(EMBEDDINGS_PATH.read_text(encoding="utf-8"))
     assert data["dimensions"] == EMBED_DIM
-    assert len(data["items"]) == 10
+    assert len(data["items"]) == 20
     for item in data["items"]:
         for key in ("id", "title", "year", "genres", "summary", "vector"):
             assert key in item, f"falta '{key}' en {item.get('id')}"

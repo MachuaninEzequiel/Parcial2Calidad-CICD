@@ -2,8 +2,8 @@
 id: firewatch
 title: Firewatch
 year: 2016
-genres: [aventura, narrativo, indie]
+genres: [adventure, narrative, indie]
 platforms: [pc, ps, xbox]
 ---
 
-Firewatch es una aventura narrativa en primera persona ambientada en los bosques de Wyoming en 1989. Encarnás a Henry, un vigía forestal que escapa de un pasado doloroso aceptando un verano solitario en una torre de observación. Su único vínculo con el mundo es Delilah, su supervisora, con quien hablás por radio: esa relación, construida a pura conversación, es el corazón del juego. Mientras explorás senderos, cañones y miradores, un misterio inquietante empieza a tejerse a tu alrededor. No hay combate ni acción: el foco está en la historia, las decisiones de diálogo y la atmósfera. Los paisajes pintados al atardecer y un guion adulto y melancólico lo vuelven una experiencia corta pero intensa, sobre la soledad, la culpa y la necesidad de conectar con alguien.
+Firewatch is a first-person narrative adventure set in the Wyoming wilderness in 1989. You play as Henry, a fire lookout escaping a painful past by taking a lonely summer job in a remote watchtower. Your only link to the world is Delilah, your supervisor, who you talk to over the radio: that relationship, built entirely through conversation, is the heart of the game. As you explore trails, canyons and overlooks, an unsettling mystery slowly begins to coil around you. There is no combat and no action: the focus is on the story, the dialogue choices and the atmosphere. The sun-drenched painted vistas and a mature, melancholic script make it a short but intense experience about loneliness, guilt and the human need to connect with someone.

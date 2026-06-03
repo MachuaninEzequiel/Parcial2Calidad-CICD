@@ -1,0 +1,31 @@
+session_id: 2026-06-02_fix-ci-deploy-en-master-equivalencia-robusta-a-empates
+spec_path: C:\Parcial2Calidad-CICD\.cortex\vault\specs\2026-06-02_fix-ci-deploy-en-master-equivalencia-robusta-a-empates.md
+spec_summary: 'Registrar (spec retroactiva; el trabajo YA está implementado y commiteado
+  por el usuario) un bugfix de CI/CD con dos arreglos surgidos al correr el pipeline
+  real en GitHub Actions. (1) BRANCH: el job `deploy` (CD a Pages, agregado en la
+  spec ''CD a GitHub Pages'') estaba gateado con `if: github.ref == ''refs/heads/main''`,
+  pero la rama por defecto del repo es `master`, así que el deploy nunca se disparaba
+  (quedaba ''skipped''). Se cambió el gate a `master` y se alinearon las menciones
+  de rama en README/PRESENTACION. (2) EQUIVALENCIA FRÁGIL: el gate de equivalencia
+  Python↔JS (tests/equivalence/embed.equiv.test.mjs) fallaba en el runner de CI —pero
+  pasaba en local— por un empate de punto flotante (~1e-8) entre witcher-3 y hades
+  para la query ''indie corto y emotivo con historia'': los MISMOS 5 juegos salían,
+  pero el desempate de orden caía distinto entre la CPU/build de onnxruntime del runner
+  y la local. El test comparaba el ranking top-k con orden EXACTO (deepEqual). Se
+  cambió a comparar el top-k como CONJUNTO (sorted), manteniendo el chequeo numérico
+  max|diff| < tolerancia (4.47e-8 << 1e-5) como gate duro. El orden exacto de dos
+  juegos con score casi igual es ruido de float, no una diferencia semántica; la calidad
+  semántica la cubre aparte el test de regresión del Paso 5.'
+start_commit: '0000000000000000000000000000000000000000'
+start_branch: ''
+opened_at: '2026-06-02T23:35:30.168609Z'
+status: closed
+mode: byo
+checkpoints: []
+verification_results: []
+tasks: []
+closed_at: '2026-06-02T23:50:07.439176Z'
+end_commit: '0000000000000000000000000000000000000000'
+documenter_decision: closed
+session_note_path: C:\Parcial2Calidad-CICD\.cortex\vault\sessions\2026-06-02_fix-ci-deploy-en-master-equivalencia-robusta-a-empates_cierre-fix-ci-deploy-master-equivalencia.md
+adrs_created: []

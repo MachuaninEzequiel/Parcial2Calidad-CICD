@@ -2,8 +2,8 @@
 id: disco-elysium
 title: Disco Elysium
 year: 2019
-genres: [rpg, narrativo, indie]
+genres: [rpg, narrative, indie]
 platforms: [pc, ps, xbox, switch]
 ---
 
-Disco Elysium es un RPG narrativo en el que despertás como un detective amnésico y resacoso que debe resolver un asesinato en una ciudad empobrecida y golpeada por la historia. Casi no hay combate: el juego es una conversación gigantesca con el mundo y, sobre todo, con vos mismo. Tus habilidades son voces internas que discuten, te aconsejan y a veces te traicionan, y cada decisión de diálogo moldea quién es este policía roto. Las elecciones importan de verdad: definen tu ideología, tus vínculos y el desenlace del caso. La escritura es brillante, mordaz y filosófica, con un mundo pintado a mano y miles de líneas de texto. Es uno de los RPG más originales jamás hechos, donde pensar y hablar reemplazan por completo a la espada.
+Disco Elysium is a narrative RPG where you wake up as an amnesiac, hungover detective who must solve a murder in a poor, history-scarred city. There is almost no combat: the game is one enormous conversation with the world and, above all, with yourself. Your skills are inner voices that argue, advise and sometimes betray you, and every dialogue choice shapes who this broken cop becomes. The choices matter for real: they define your ideology, your relationships and how the case ends. The writing is brilliant, biting and philosophical, set in a hand-painted world with thousands of lines of branching text. It is one of the most original role-playing games ever made, where thinking and talking completely replace the sword.

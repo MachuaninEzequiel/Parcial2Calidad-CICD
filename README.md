@@ -4,7 +4,9 @@
 
 > Catálogo de videojuegos en Markdown que se vectoriza con un modelo de IA dentro del pipeline de CI y se busca por **significado** —no por palabras clave— 100% en el navegador.
 
-Escribís *"juego para jugar con amigos en el sillón"* y te devuelve **Overcooked 2**, aunque esa frase no aparezca escrita en ningún lado. Eso son **embeddings**: representar texto como vectores numéricos y comparar por cercanía semántica.
+Escribís *"couch co-op game to play with friends"* y te devuelve **Overcooked 2**, aunque esa frase no aparezca escrita en ningún lado. Eso son **embeddings**: representar texto como vectores numéricos y comparar por cercanía semántica. El catálogo arranca con **20 juegos** de familias bien distintas —indies narrativos, shooters competitivos, MOBAs, battle royale, fighting, terror, party online y co-op— para que la búsqueda por significado tenga variedad real que discriminar.
+
+> **Decisión de idioma:** el modelo de IA (**all-MiniLM-L6-v2**) es de **inglés**, así que el **contenido que se vectoriza** —las sinopsis del catálogo, los géneros y las queries de búsqueda— está en **inglés** para que la búsqueda por significado funcione bien (con queries en español el modelo no discriminaba). La **interfaz, este README y la presentación** siguen en **español**: solo se migró lo que impacta al modelo, no la documentación ni el chrome de la UI.
 
 > Este proyecto sigue **Spec Driven Development**: los archivos `schemas/` y `specs/` son la **fuente de verdad**, y el código y los tests se derivan de ellos.
 
@@ -61,12 +63,12 @@ La pieza central: **el mismo `model.onnx` corre en dos lugares**. En el CI (con 
 
 ## Estado actual — Pasos 1-8 ✅ (CI/CD completo)
 
-- **Paso 1 ✅ · base SDD:** schema, expectativas, catálogo inicial (10 juegos) y el validador.
-- **Paso 2 ✅ · vectorización ONNX:** `scripts/vectorize.py` recorre el catálogo, lo pasa por **all-MiniLM-L6-v2** (ONNX), aplica mean pooling + normalización L2 y genera `dist/embeddings.json` (10 items, vectores de 384 dimensiones).
-- **Paso 3 ✅ · frontend estático + motor de ranking:** sitio en `site/` (HTML + CSS + JS vanilla, sin frameworks) que carga `embeddings.json`, lista los 10 juegos y permite **buscar juegos similares** por similitud coseno client-side. Las funciones puras (`cosineSimilarity`, `topK`) viven en `site/js/search.mjs` y se testean con el runner nativo `node:test`.
+- **Paso 1 ✅ · base SDD:** schema, expectativas, catálogo (hoy **20 juegos**) y el validador.
+- **Paso 2 ✅ · vectorización ONNX:** `scripts/vectorize.py` recorre el catálogo, lo pasa por **all-MiniLM-L6-v2** (ONNX), aplica mean pooling + normalización L2 y genera `dist/embeddings.json` (20 items, vectores de 384 dimensiones).
+- **Paso 3 ✅ · frontend estático + motor de ranking:** sitio en `site/` (HTML + CSS + JS vanilla, sin frameworks) que carga `embeddings.json`, lista los 20 juegos y permite **buscar juegos similares** por similitud coseno client-side. Las funciones puras (`cosineSimilarity`, `topK`) viven en `site/js/search.mjs` y se testean con el runner nativo `node:test`.
 - **Paso 4 ✅ · búsqueda por texto libre + equivalencia Python↔JS:** la caja de texto libre está **habilitada**. Al escribir una frase, el navegador la vectoriza con el **mismo `model.onnx`** del CI (vía **Transformers.js** = onnxruntime-web, que entra por un **import map → CDN**, sin npm install) y rankea el catálogo con la misma `topK`. La vectorización vive aislada en `site/js/vectorizer.mjs` para que `search.mjs` siga puro. Y el corazón del paso: un **test de equivalencia** (`tests/equivalence/embed.equiv.test.mjs`) prueba que el vector de JavaScript coincide con el de referencia de Python dentro de `1e-5` **y** que el ranking top-k es idéntico — la mitigación del riesgo #1 del ADR-001.
 
-- **Paso 5 ✅ · regresión semántica + catálogo afinado:** el loop SDD se cierra. `tests/test_search_regression.py` lee `specs/search-expectations.yaml` **en runtime** y genera un test parametrizado por expectativa (Capa B → tests): vectoriza cada query reusando el `embed()` de `vectorize.py` **sin padding** (régimen browser, ADR-002), rankea contra `dist/embeddings.json` por coseno y exige que `must_include_any_of` caiga en el top-k. Para que el ranking sea bueno con el modelo chico de inglés, se afinó el **contenido del catálogo en español** (ADR-003) en vez de cambiar de modelo: ahora *"juego para jugar con amigos en el sillón"* devuelve **Overcooked 2 en el puesto #1** y *"souls-like para principiantes"* devuelve **Hollow Knight en el #1**, ambas reales. La demo de la línea 5 ya no es aspiracional. En el CI (Paso 6), estos tests corren como gate junto al resto.
+- **Paso 5 ✅ · regresión semántica + catálogo en inglés alineado al modelo:** el loop SDD se cierra. `tests/test_search_regression.py` lee `specs/search-expectations.yaml` **en runtime** y genera un test parametrizado por expectativa (Capa B → tests): vectoriza cada query reusando el `embed()` de `vectorize.py` **sin padding** (régimen browser, ADR-002), rankea contra `dist/embeddings.json` por coseno y exige que `must_include_any_of` caiga en el top-k. Para que el ranking sea bueno con el modelo chico de inglés, **alineamos el idioma del contenido al modelo**: las sinopsis del catálogo y las queries pasan a **inglés** (decisión que amienda el ADR-003 —de "afinar el catálogo en español" al fix real: contenido en inglés—, sin cambiar el modelo). Ahora *"couch co-op game to play with friends"* devuelve **Overcooked 2 en el puesto #1**, *"souls-like for beginners"* devuelve **Hollow Knight en el #1** y *"relaxing farming game"* devuelve **Stardew Valley en el #1**, todas reales. La demo de la línea 5 ya no es aspiracional. En el CI (Paso 6), estos tests corren como gate junto al resto.
 
 - **Paso 6 ✅ · Integración Continua (GitHub Actions):** `.github/workflows/ci.yml` corre en **cada push y cada PR** los MISMOS gates que probás localmente (ver más abajo). Es **Integración Continua**: la Entrega Continua (CD a GitHub Pages) llegó en el cierre (ver el bullet de CD); Docker es el Paso 7.
 
@@ -108,7 +110,7 @@ python -m http.server 8000
 #    → abrir http://localhost:8000/site/
 ```
 
-El sitio fetchea `../dist/embeddings.json`, así que hay que servir la **raíz del repo** (no `site/`). En cada card, "Buscar similares" devuelve el top-5 por coseno descendente. En la caja de arriba, escribí una frase (ej. *"juego para jugar con amigos en el sillón"*) y dale **Buscar**: la primera vez baja el modelo (~23 MB) desde el CDN y después es instantáneo. **El sitio NO necesita `npm install`** — Transformers.js entra por el import map al CDN.
+El sitio fetchea `../dist/embeddings.json`, así que hay que servir la **raíz del repo** (no `site/`). En cada card, "Buscar similares" devuelve el top-5 por coseno descendente. En la caja de arriba, escribí una frase **en inglés** (ej. *"couch co-op game to play with friends"* o *"relaxing farming game"*) y dale **Buscar**: la primera vez baja el modelo (~23 MB) desde el CDN y después es instantáneo. **El sitio NO necesita `npm install`** — Transformers.js entra por el import map al CDN. (Las queries van en inglés porque el modelo es de inglés; ver la *Decisión de idioma* arriba.)
 
 ### Correr el gate de equivalencia Python↔JS (Paso 4)
 
@@ -176,7 +178,7 @@ El subcomando por defecto es `ci` (el pipeline completo). El `docker/entrypoint.
 │   └── search-expectations.yaml  # SDD Capa B · expectativas de búsqueda
 ├── catalog/                      # un .md por juego (frontmatter + sinopsis)
 │   ├── hollow-knight.md
-│   └── ...                       # 10 juegos
+│   └── ...                       # 20 juegos (indies + competitivos + multijugador)
 ├── site/                         # frontend estático (Pasos 3-4)
 │   ├── index.html                # estructura + import map (Transformers.js → CDN)
 │   ├── css/
