@@ -12,12 +12,23 @@ requires-python = ">=3.11"
 # Dependencias de runtime. Paso 1: pyyaml + jsonschema (validación del catálogo).
 # Paso 2: numpy + onnxruntime + tokenizers + huggingface_hub (vectorización ONNX).
 # Se mantienen mínimas y centrales (sección 11 del brief): nada superfluo.
+#
+# REPRODUCIBILIDAD (fix Windows↔Ubuntu): las tres libs que determinan el VALOR
+# del embedding van PINEADAS a versión exacta. Con rangos `>=`, cada instalación
+# fresca (Windows local, runner de Ubuntu del CI, imagen Docker) resolvía una
+# versión distinta de onnxruntime, y la inferencia del modelo int8 NO es idéntica
+# entre versiones: onnxruntime 1.25.1 coincide con transformers.js (onnxruntime-web
+# del navegador) dentro de 1e-8, pero 1.27.0 diverge ~5e-3 en algunas queries
+# (medido en "moba with ranked matches"). Eso rompía el gate de equivalencia y el
+# top-k del catálogo. Pineando, el CI, Docker y el dev local calculan EXACTAMENTE
+# el mismo embedding. (huggingface_hub solo baja el modelo, no afecta el vector →
+# queda con rango.)
 dependencies = [
     "pyyaml>=6.0",
     "jsonschema>=4.18",
-    "numpy>=1.26",
-    "onnxruntime>=1.20",
-    "tokenizers>=0.20",
+    "numpy==2.3.3",
+    "onnxruntime==1.25.1",
+    "tokenizers==0.23.1",
     "huggingface_hub>=0.25",
 ]
 

@@ -5,6 +5,11 @@
 #
 #   ci         pipeline completo (paridad con GitHub Actions). Es el default.
 #   vectorize  regenera dist/embeddings.json (montá un volumen para sacarlo).
+#   reference  regenera dist/embeddings.json + el fixture dorado de equivalencia
+#              (tests/fixtures/query-vectors.reference.json) DENTRO de Linux, para
+#              que los artefactos golden se generen en el MISMO SO que el CI de
+#              GitHub Actions (ubuntu) y no haya deriva numérica Windows↔Ubuntu en
+#              el top-k. Montá volúmenes sobre dist/ y tests/fixtures/ para sacarlos.
 #   serve      sirve el sitio estático en :8000 (http://localhost:8000/site/).
 set -euo pipefail
 
@@ -22,9 +27,10 @@ run_ci() {
 }
 
 usage() {
-  echo "Uso: docker run [...] <imagen> [ci|vectorize|serve]" >&2
+  echo "Uso: docker run [...] <imagen> [ci|vectorize|reference|serve]" >&2
   echo "  ci         pipeline completo (paridad con el CI). Default." >&2
   echo "  vectorize  regenera dist/embeddings.json." >&2
+  echo "  reference  regenera dist/embeddings.json + el fixture dorado (Linux-origin)." >&2
   echo "  serve      sirve el sitio en :8000 (http://localhost:8000/site/)." >&2
 }
 
@@ -35,6 +41,13 @@ case "$cmd" in
     ;;
   vectorize)
     python scripts/vectorize.py
+    ;;
+  reference)
+    # Genera los artefactos golden EN LINUX (mismo SO que el CI). El orden
+    # importa: emit_reference_vectors.py lee dist/embeddings.json para calcular el
+    # top-k de referencia, así que primero vectorizamos el catálogo.
+    python scripts/vectorize.py
+    python scripts/emit_reference_vectors.py
     ;;
   serve)
     # Si todavía no hay embeddings (p. ej. se montó un dist/ vacío), los generamos.
