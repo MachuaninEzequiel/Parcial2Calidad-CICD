@@ -26,3 +26,15 @@ venv/
 Thumbs.db
 .vscode/
 .idea/
+
+# Cortex (servidor MCP): se levanta solo y deja logs/memoria que ensucian el
+# repo y molestan en la defensa. Ignoramos TODA la carpeta. Si ya estaba
+# trackeada, dejar de trackearla con:  git rm -r --cached .cortex
+.cortex/
+
+
+# Carpeta de ejemplos para romper el CI a propósito (solo para el examen).
+# No se commitea; se borra después de la defensa.
+romper-ci/
+romper-ci-2/
+docs-expo/

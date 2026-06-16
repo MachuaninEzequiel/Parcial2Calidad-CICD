@@ -1,0 +1,73 @@
+name: Issue on CI failure
+
+# Cuando el workflow "CI" termina, si terminó en ROJO (failure) abre un issue
+# con la etiqueta `ci-failure`. La automatización "Auto-add" del GitHub Project lo
+# mete solo en el tablero (vista "Fallos de CI"). No toca ci.yml: se cuelga aparte
+# escuchando el evento workflow_run.
+on:
+  workflow_run:
+    workflows: ["CI"]      # debe coincidir EXACTO con el `name:` del ci.yml
+    types: [completed]
+
+# Solo necesita poder crear/comentar issues. Mínimo privilegio.
+permissions:
+  issues: write
+
+jobs:
+  abrir-issue:
+    # Actúa SOLO si el CI terminó en fallo. Si pasó (verde), no hace nada.
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Crear o actualizar el issue de fallo de CI
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const run = context.payload.workflow_run;
+            const sha = run.head_sha.slice(0, 7);
+            const branch = run.head_branch;
+            const title = `🔴 CI falló en ${branch} (${sha})`;
+
+            // Marcador invisible para no duplicar issues por rama: si ya hay uno
+            // abierto para esta rama, comentamos en vez de crear otro.
+            const marker = `<!-- ci-failure:${branch} -->`;
+
+            const body = [
+              `El pipeline **CI** terminó en rojo.`,
+              ``,
+              `- **Rama:** \`${branch}\``,
+              `- **Commit:** ${run.head_sha}`,
+              `- **Run (log del fallo):** ${run.html_url}`,
+              ``,
+              `Abrí el run, mirá el paso que quedó en rojo y corregí. Cuando vuelvas`,
+              `a pushear y el CI quede en verde, cerrá este issue: el Project lo`,
+              `moverá solo a la columna Done.`,
+              ``,
+              marker,
+            ].join('\n');
+
+            const existing = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'ci-failure',
+              per_page: 100,
+            });
+            const match = existing.data.find(i => i.body && i.body.includes(marker));
+
+            if (match) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: match.number,
+                body: `🔁 El CI volvió a fallar en \`${branch}\` (${sha}). Run: ${run.html_url}`,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                labels: ['ci-failure'],
+                body,
+              });
+            }
