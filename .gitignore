@@ -1,9 +1,11 @@
 # Output del build (se regenera en cada corrida; nunca se commitea)
 dist/
 
-# Modelo ONNX (~22 MB) + tokenizer.json: se descargan en CI o build local (Paso 2).
-# Ignoramos el directorio entero (nada de models/ va al repo).
-models/
+# Modelo ONNX (~22 MB) + tokenizer.json: AHORA se versionan en el repo para que el
+# CI sea hermético (download_model.py los encuentra y NO baja de HuggingFace → sin
+# 429, y el pipeline corre más rápido). El gate 8 (Transformers.js en Node) sigue
+# usando el CDN, autenticado con el secret HF_TOKEN. El deploy a Pages NO incluye
+# models/ (el navegador baja el modelo del CDN), así que esto no afecta producción.
 
 # Dependencias JS del gate de equivalencia (Paso 4). El SITIO no las necesita
 # (usa el import map al CDN); se instalan solo para `node --test` en Node/CI.

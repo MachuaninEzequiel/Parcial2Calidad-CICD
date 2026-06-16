@@ -21,6 +21,14 @@ concurrency:
 permissions:
   contents: read
 
+# Token de HuggingFace (secret del repo). Lo levantan huggingface_hub (Python) y
+# Transformers.js (Node, gate 8): las descargas pasan a ser AUTENTICADAS, con un
+# límite de tasa mucho más alto → evita el 429 de las IPs compartidas del runner.
+# Con el modelo ya versionado en models/, el lado Python ni baja; esto cubre el
+# gate 8, que sigue tomando el modelo del CDN.
+env:
+  HF_TOKEN: ${{ secrets.HF_TOKEN }}
+
 jobs:
   ci:
     runs-on: ubuntu-latest
