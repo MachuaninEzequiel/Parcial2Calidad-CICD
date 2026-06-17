@@ -17,6 +17,15 @@ dist
 .cortex
 .claude
 
+# Recetario para "romper el CI" (carpetas locales, gitignored, NO son parte del
+# proyecto). El CI real nunca las ve (hace checkout de git); las excluimos del
+# build context para que `docker run ... ci` corra igual de limpio en local.
+romper-ci
+romper-ci-2
+
+# Docs de exposición (no afectan el build ni los tests)
+docs-expo
+
 # Python
 .venv
 venv
