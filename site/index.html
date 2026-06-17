@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
   <head>
     <meta charset="utf-8" />
@@ -21,7 +21,7 @@
   </head>
   <body>
     <header class="hero">
-      <h1>🎮 Buscador Semántico de Videojuegos</h1>
+      <h1>🎮 Buscador Semántico de Videojuegos - Cambios para la DEMO</h1>
       <p class="lead">
         Buscá juegos por <strong>significado</strong>, no por palabras clave:
         cada juego es un vector de 384 números y comparamos por cercanía
@@ -43,15 +43,22 @@
             placeholder="Ej.: couch co-op game to play with friends"
             autocomplete="off"
           />
-          <button type="submit" id="search-btn" class="search-btn">Buscar</button>
+          <button type="submit" id="search-btn" class="search-btn">
+            Buscar
+          </button>
         </form>
-        <p id="search-status" class="search-status" aria-live="polite" hidden></p>
+        <p
+          id="search-status"
+          class="search-status"
+          aria-live="polite"
+          hidden
+        ></p>
         <p class="note">
           ✍️ Escribí una frase y buscá por <strong>significado</strong>. La
-          <strong>primera</strong> búsqueda baja el modelo (~23 MB) al navegador y
-          puede tardar unos segundos; después es instantánea. También podés usar
-          <strong>“Buscar similares”</strong> en cada card de abajo (no necesita
-          el modelo).
+          <strong>primera</strong> búsqueda baja el modelo (~23 MB) al navegador
+          y puede tardar unos segundos; después es instantánea. También podés
+          usar <strong>“Buscar similares”</strong> en cada card de abajo (no
+          necesita el modelo).
         </p>
       </section>
 
@@ -70,8 +77,8 @@
     <footer class="footer">
       <p>
         Proyecto CI/CD · Spec Driven Development · Paso 4 (vectorización en el
-        navegador). El mismo <code>model.onnx</code> del CI vectoriza tu búsqueda
-        acá, en tu navegador.
+        navegador). El mismo <code>model.onnx</code> del CI vectoriza tu
+        búsqueda acá, en tu navegador.
       </p>
     </footer>
 
