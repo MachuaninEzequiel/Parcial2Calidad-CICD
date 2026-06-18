@@ -83,3 +83,7 @@ expectations:
   - query: "soccer with cars"
     must_include_any_of: [rocket-league]
     in_top_k: 5
+
+  - query: "intense battle royale shooting match"
+    must_include_any_of: [gris]
+    in_top_k: 5
