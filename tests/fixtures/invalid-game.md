@@ -6,4 +6,4 @@ genres: [battle-royale, accion]
 platforms: [pc, atari]
 ---
 
-Corto.
+Corto
