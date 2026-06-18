@@ -85,5 +85,5 @@ expectations:
     in_top_k: 5
 
   - query: "intense battle royale shooting match"
-    must_include_any_of: [gris]
+    must_include_any_of: [starwars-fallen-order]
     in_top_k: 5
