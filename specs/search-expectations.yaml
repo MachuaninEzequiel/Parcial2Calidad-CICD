@@ -83,3 +83,7 @@ expectations:
   - query: "soccer with cars"
     must_include_any_of: [rocket-league]
     in_top_k: 5
+
+  - query: "first person shooter"
+    must_include_any_of: [starwars-fallenorder]
+    in_top_k: 5
